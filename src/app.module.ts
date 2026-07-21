@@ -8,6 +8,8 @@ import configuration from './config/configuration';
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from 'path';
 import { AdminModule } from './modules/admin/admin.module';
+import { StateModule } from './modules/states/states.module';
+import { DistrictModule } from './modules/districts/districts.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { AdminModule } from './modules/admin/admin.module';
     DatabaseModule,
     RolesModule,
     AdminModule,
+    StateModule,
+    DistrictModule,
 
   ],
   controllers: [AppController],

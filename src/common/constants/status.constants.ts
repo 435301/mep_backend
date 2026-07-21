@@ -27,9 +27,22 @@ export const MESSAGES = {
     ACCOUNT_DELETED_SUCCESS: 'Account deleted successfully',
     PROFILE_IMAGE_REQUIRED: 'Profile Image is required',
     ACCOUNT_DELETED: 'Your account has been deleted. Please contact support if you want to restore it.',
-    OTP_NOTFOUND:'OTP Not Found',
-    OTP_EXPIRED:'OTP Expired',
-    NEW_OLD_PASSWORD:'New password cannot be the same as the old password',
-    CURRENT_PASSWORD_INCORRECT:'Current password is incorrect',
+    OTP_NOTFOUND: 'OTP Not Found',
+    OTP_EXPIRED: 'OTP Expired',
+    NEW_OLD_PASSWORD: 'New password cannot be the same as the old password',
+    CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
 
+
+    //state
+    STATE_ALREADY_EXISTS: 'State already exists',
+    STATE_CREATED: 'State created successfully',
+    STATE_NOT_FOUND: 'State not found',
+    STATE_UPDATED: 'State updated successfully',
+    STATE_DELETED: 'State deleted successfully',
+    //district
+    DISTRICT_ALREADY_EXISTS: 'District already exists',
+    DISTRICT_CREATED: 'District created successfully',
+    DISTRICT_NOT_FOUND: 'District not found',
+    DISTRICT_UPDATED: 'District updated successfully',
+    DISTRICT_DELETED: 'District deleted successfully',
 }
