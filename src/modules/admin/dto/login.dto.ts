@@ -5,7 +5,7 @@ export class AdminLoginDto {
     @IsEmail()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'admin@bookmymep.com',
+        example: 'admin@gmail.com',
     })
     email!: string;
 
@@ -22,7 +22,7 @@ export class AdminLoginDto {
 export class ForgotPasswordDto {
     @IsEmail()
     @ApiProperty({
-        example: 'admin@bookmymep.com',
+        example: 'admin@gmail.com',
     })
     email!: string;
 }
@@ -30,7 +30,7 @@ export class ForgotPasswordDto {
 export class VerifyOtpDto {
     @IsEmail()
     @ApiProperty({
-        example: 'admin@bookmymep.com',
+        example: 'admin@gmail.com',
     })
     email!: string;
 
@@ -38,7 +38,7 @@ export class VerifyOtpDto {
     @IsNotEmpty()
     @Length(4, 6)
     @ApiProperty({
-        example: '123456',
+        example: '1234',
     })
     otp!: string;
 }
@@ -48,13 +48,13 @@ export class ResetPasswordDto {
 
     @IsNotEmpty()
     @ApiProperty({
-        example: 'admin@bookmymep.com',
+        example: 'admin@gmail.com',
     })
     email!: string;
 
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Admin@12345',
+        example: 'Admin@123',
     })
     newPassword!: string;
 }
@@ -62,7 +62,7 @@ export class ResetPasswordDto {
 export class ChangePasswordDto {
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Admin@12345',
+        example: 'Admin@123',
     })
     oldPassword!: string;
 
