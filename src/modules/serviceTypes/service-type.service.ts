@@ -59,7 +59,7 @@ export class ServiceTypeService extends BaseService {
         }
 
         if (search && search.trim().length >= 3) {
-            qb.andWhere('ServiceType.title LIKE :search  OR ServiceType.subTitle LIKE :search', {
+            qb.andWhere('ServiceType.title LIKE :search', {
                 search: `%${search.trim()}%`,
             });
         }
