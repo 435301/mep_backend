@@ -10,6 +10,7 @@ import { join } from 'path';
 import { AdminModule } from './modules/admin/admin.module';
 import { StateModule } from './modules/states/states.module';
 import { DistrictModule } from './modules/districts/districts.module';
+import { ServiceTypeModule } from './modules/serviceTypes/service-type.module';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { DistrictModule } from './modules/districts/districts.module';
     AdminModule,
     StateModule,
     DistrictModule,
-
+    ServiceTypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

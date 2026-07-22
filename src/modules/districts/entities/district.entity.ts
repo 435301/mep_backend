@@ -16,7 +16,7 @@ export class District extends AuditEntity {
   @PrimaryGeneratedColumn()
   id !: number;
 
-  @Column()
+  @Column({ name: 'district_name', length: 60 })
   name !: string;
 
   @Column({ default: true })

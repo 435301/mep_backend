@@ -45,4 +45,11 @@ export const MESSAGES = {
     DISTRICT_NOT_FOUND: 'District not found',
     DISTRICT_UPDATED: 'District updated successfully',
     DISTRICT_DELETED: 'District deleted successfully',
+
+    //service types
+    SERVICE_TYPE_ALREADY_EXISTS: 'Service type already exists',
+    SERVICE_TYPE_CREATED: 'Service type created successfully',
+    SERVICE_TYPE_NOT_FOUND: 'Service type not found',
+    SERVICE_TYPE_UPDATED: 'Service type updated successfully',
+    SERVICE_TYPE_DELETED: 'Service type deleted successfully',
 }

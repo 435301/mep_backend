@@ -14,7 +14,7 @@ export class State extends AuditEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ length: 100 })
+  @Column({ length: 60, name:'state_name' })
   name!: string;
 
   @Column({ default: true })

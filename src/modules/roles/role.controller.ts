@@ -1,4 +1,11 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { RolesService } from './role.service';
 
 @Controller('roles')
-export class RolesController {}
+export class RolesController {
+    constructor(private readonly rolesService: RolesService) { }
+    @Get()
+    async findAll() {
+        return this.rolesService.findAll();
+    }
+}

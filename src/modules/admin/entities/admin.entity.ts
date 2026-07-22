@@ -7,7 +7,7 @@ export class Admin {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: 'admin_name' })
+    @Column({ name: 'admin_name' , length: 60})
     name!: string;
 
     @Column({ unique: true, nullable: false, name: 'admin_email' })
