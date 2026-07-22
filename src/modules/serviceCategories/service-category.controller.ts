@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Put, Req, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { iconUploadConfig } from 'src/common/utils/uploads.utils';
 import { AuthGuard } from '@nestjs/passport';
@@ -7,6 +6,7 @@ import { ServiceCategoryService } from './service-category.service';
 import { CreateServiceCategoryDto } from './dto/create-service-category-dto';
 import { UpdateServiceCategoryDto } from './dto/update-service-category-dto';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
+import { ListServiceCategoryDto } from './dto/service-category-list-dto';
 
 
 @Controller('admin/serviceCategory')
@@ -27,7 +27,7 @@ export class ServiceCategoryController {
   }
 
   @Post('list')
-  findAll(@Body() dto: PaginationDto) {
+  findAll(@Body() dto: ListServiceCategoryDto) {
     return this.service.findAll(dto);
   }
 

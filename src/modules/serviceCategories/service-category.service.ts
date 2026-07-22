@@ -74,7 +74,7 @@ export class ServiceCategoryService extends BaseService {
     }
 
     async findAll(dto) {
-        const { page, limit, search, pagination, status } = dto;
+        const { page, limit, search, pagination, status, serviceTypeId } = dto;
 
         const qb = this.ServiceCategoryRepo
             .createQueryBuilder('ServiceCategory')
@@ -92,6 +92,9 @@ export class ServiceCategoryService extends BaseService {
             qb.andWhere('ServiceCategory.title LIKE :search', {
                 search: `%${search.trim()}%`,
             });
+        }
+        if (serviceTypeId) {
+            qb.andWhere('ServiceCategory.serviceTypeId = :serviceTypeId', { serviceTypeId });
         }
         if (pagination) {
             qb.orderBy('ServiceCategory.createdAt', 'DESC');
