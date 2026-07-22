@@ -20,15 +20,8 @@ export class ServiceSubCategory extends AuditEntity {
     @Column({ default: true })
     status !: boolean;
 
-    @Column({ name: 'service_type_id' })
-    serviceTypeId !: number;
-
     @Column({ name: 'service_category_id' })
     serviceCategoryId !: number;
-
-    @ManyToOne(() => ServiceType, (service) => service.serviceCategories)
-    @JoinColumn({ name: 'service_type_id' })
-    serviceType !: ServiceType;
 
     @ManyToOne(() => ServiceCategory, (service) => service.serviceSubCategories)
     @JoinColumn({ name: 'service_category_id' })

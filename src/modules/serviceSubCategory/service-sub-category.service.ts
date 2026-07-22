@@ -43,7 +43,6 @@ export class ServiceSubCategoryService extends BaseService {
         const iconPath = `ServiceSubCategory/${file.filename}`;
 
         const category = this.ServiceSubCategoryRepo.create({
-            serviceTypeId: dto.serviceTypeId,
             serviceCategoryId: dto.serviceCategoryId,
             title: dto.title,
             icon: iconPath,
@@ -82,12 +81,12 @@ export class ServiceSubCategoryService extends BaseService {
         const qb = this.ServiceSubCategoryRepo
             .createQueryBuilder('ServiceSubCategory')
             .leftJoinAndSelect(
-                "ServiceSubCategory.serviceType",
-                "serviceType",
-            )
-            .leftJoinAndSelect(
                 "ServiceSubCategory.serviceCategory",
                 "serviceCategory",
+            )
+            .leftJoinAndSelect(
+                "serviceCategory.serviceType",
+                "serviceType",
             )
             .where('ServiceSubCategory.trash = :trash', { trash: false });
 
