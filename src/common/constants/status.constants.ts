@@ -60,4 +60,11 @@ export const MESSAGES = {
     SERVICE_CATEGORY_NOT_FOUND: 'Service category not found',
     SERVICE_CATEGORY_UPDATED: 'Service category updated successfully',
     SERVICE_CATEGORY_DELETED: 'Service category deleted successfully',
+
+    //service sub categories
+    SERVICE_SUB_CATEGORY_ALREADY_EXISTS: 'Service sub category already exists',
+    SERVICE_SUB_CATEGORY_CREATED: 'Service sub category created successfully',
+    SERVICE_SUB_CATEGORY_NOT_FOUND: 'Service sub category not found',
+    SERVICE_SUB_CATEGORY_UPDATED: 'Service sub category updated successfully',
+    SERVICE_SUB_CATEGORY_DELETED: 'Service sub category deleted successfully',
 }
