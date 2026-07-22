@@ -29,7 +29,9 @@ export class AdminService {
                 status: true,
                 trash: false,
             },
-            relations: ['role'],
+            relations: {
+                role: true
+            },
         });
 
         if (!admin) {

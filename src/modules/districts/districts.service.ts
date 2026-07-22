@@ -38,7 +38,9 @@ export class DistrictService extends BaseService {
                 },
                 trash: false,
             },
-            relations: ['state'],
+            relations: {
+                state: true
+            },
         });
 
         if (exists) {
@@ -91,7 +93,9 @@ export class DistrictService extends BaseService {
     async findOne(id: number) {
         const district = await this.districtRepo.findOne({
             where: { id, trash: false },
-            relations: ['state'],
+            relations: {
+                state: true
+            },
         });
 
         if (!district) {

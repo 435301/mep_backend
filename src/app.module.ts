@@ -11,6 +11,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { StateModule } from './modules/states/states.module';
 import { DistrictModule } from './modules/districts/districts.module';
 import { ServiceTypeModule } from './modules/serviceTypes/service-type.module';
+import { ServiceCategoryModule } from './modules/serviceCategories/service-category.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ServiceTypeModule } from './modules/serviceTypes/service-type.module';
     StateModule,
     DistrictModule,
     ServiceTypeModule,
+    ServiceCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

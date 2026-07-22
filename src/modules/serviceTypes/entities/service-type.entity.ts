@@ -1,4 +1,5 @@
 import { AuditEntity } from 'src/common/entity/base.entity';
+import { ServiceCategory } from 'src/modules/serviceCategories/entities/service-category.entity';
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
 
 @Entity('service_type')
@@ -14,5 +15,8 @@ export class ServiceType extends AuditEntity {
 
     @Column({ default: true })
     status !: boolean;
+
+    @OneToMany(() => ServiceCategory, (service) => service.serviceType)
+    serviceCategories !: ServiceCategory[];
 
 }

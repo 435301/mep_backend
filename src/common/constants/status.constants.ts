@@ -31,6 +31,7 @@ export const MESSAGES = {
     OTP_EXPIRED: 'OTP Expired',
     NEW_OLD_PASSWORD: 'New password cannot be the same as the old password',
     CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
+    ICON_REQUIRED: "Icon required",
 
 
     //state
@@ -52,4 +53,11 @@ export const MESSAGES = {
     SERVICE_TYPE_NOT_FOUND: 'Service type not found',
     SERVICE_TYPE_UPDATED: 'Service type updated successfully',
     SERVICE_TYPE_DELETED: 'Service type deleted successfully',
+
+    //service categories
+    SERVICE_CATEGORY_ALREADY_EXISTS: 'Service category already exists',
+    SERVICE_CATEGORY_CREATED: 'Service category created successfully',
+    SERVICE_CATEGORY_NOT_FOUND: 'Service category not found',
+    SERVICE_CATEGORY_UPDATED: 'Service category updated successfully',
+    SERVICE_CATEGORY_DELETED: 'Service category deleted successfully',
 }
