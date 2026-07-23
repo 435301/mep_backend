@@ -7,6 +7,8 @@ import { District } from './entities/district.entity';
 import { State } from '../states/entities/state.entity';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
 
 
 @Injectable()
@@ -154,6 +156,15 @@ export class DistrictService extends BaseService {
 
         await this.districtRepo.save(district);
         return { message: MESSAGES.DISTRICT_DELETED };
+    }
+
+    async bulkStatus(dto: BulkStatusDto, adminId: number) {
+        return BulkStatusHelper.updateStatus(
+            this.districtRepo,
+            dto.ids,
+            dto.status,
+            adminId,
+        );
     }
 
 

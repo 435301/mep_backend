@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -24,6 +25,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ListDistrictDto } from './dto/llist-dto';
 import { ROUTES } from 'src/common/constants/routes.constant';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 
 @Controller(`${ROUTES.ADMIN}/districts`)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -60,6 +62,16 @@ export class DistrictController {
     return this.districtService.remove(+id, req.user.id);
   }
 
+  @Patch('bulk-status')
+  async bulkStatus(
+    @Body() dto: BulkStatusDto,
+    @Req() req: any,
+  ) {
+    return this.districtService.bulkStatus(
+      dto,
+      req.user.id,
+    );
+  }
 }
 
 @Controller('users/districts')

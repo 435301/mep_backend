@@ -6,6 +6,8 @@ import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
 import { MESSAGES } from 'src/common/constants/status.constants';
 import { BaseService } from 'src/common/services/base.service';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
 
 @Injectable()
 export class StateService extends BaseService {
@@ -93,6 +95,15 @@ export class StateService extends BaseService {
 
         await this.stateRepo.save(state);
         return { message: MESSAGES.STATE_DELETED };
+    }
+
+    async bulkStatus(dto: BulkStatusDto, adminId: number) {
+        return BulkStatusHelper.updateStatus(
+            this.stateRepo,
+            dto.ids,
+            dto.status,
+            adminId,
+        );
     }
 
     async findActive() {

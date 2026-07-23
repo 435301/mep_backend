@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Req,
@@ -33,6 +34,7 @@ import { UpdateStateDto } from './dto/update-state.dto';
 import { StateResponseDto } from './dto/response-dto';
 import { StateListResponseDto } from './dto/state-list-response.dto';
 import { ROUTES } from 'src/common/constants/routes.constant';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 
 @ApiTags('Admin - States')
 @ApiBearerAuth('JWT-auth')
@@ -127,6 +129,18 @@ export class StateController {
       req.user.id,
     );
   }
+
+    @Patch('bulk-status')
+    async bulkStatus(
+      @Body() dto: BulkStatusDto,
+      @Req() req: any,
+    ) {
+      return this.stateService.bulkStatus(
+        dto,
+        req.user.id,
+      );
+    }
+
 }
 
 @ApiTags('User - States')
