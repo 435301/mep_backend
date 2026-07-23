@@ -18,9 +18,7 @@ export class ServiceSubCategoryService extends BaseService {
     constructor(
         @InjectRepository(ServiceSubCategory)
         private ServiceSubCategoryRepo: Repository<ServiceSubCategory>,
-        @InjectRepository(ServiceType)
-        private ServiceTypeRepo: Repository<ServiceType>,
-        @InjectRepository(ServiceType)
+        @InjectRepository(ServiceCategory)
         private ServiceCatRepo: Repository<ServiceCategory>,
 
     ) {
@@ -41,26 +39,18 @@ export class ServiceSubCategoryService extends BaseService {
             },
         });
 
-        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
-            where: {
-                id: dto.serviceTypeId,
-                trash: false,
-            },
-        });
-
-        if (!serviceTypeExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
-        }
-
-        const serviceCatExists = await this.ServiceCatRepo.findOne({
+        const serviceCategory = await this.ServiceCatRepo.findOne({
             where: {
                 id: dto.serviceCategoryId,
+                serviceTypeId: dto.serviceTypeId,
                 trash: false,
             },
         });
 
-        if (!serviceCatExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        if (!serviceCategory) {
+            throw new BadRequestException(
+                'Selected Service Category does not belong to the selected Service Type.',
+            );
         }
 
 
@@ -114,7 +104,6 @@ export class ServiceSubCategoryService extends BaseService {
             search,
             pagination,
             status,
-            serviceTypeId,
             serviceCategoryId,
         } = dto;
 
@@ -129,24 +118,6 @@ export class ServiceSubCategoryService extends BaseService {
                 'serviceType',
             )
             .where('serviceSubCategory.trash = :trash', { trash: false });
-
-        // Validate Service Type
-        if (serviceTypeId) {
-            const serviceType = await this.ServiceTypeRepo.findOne({
-                where: {
-                    id: serviceTypeId,
-                    trash: false,
-                },
-            });
-
-            if (!serviceType) {
-                throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
-            }
-
-            qb.andWhere('serviceCategory.serviceTypeId = :serviceTypeId', {
-                serviceTypeId,
-            });
-        }
 
         // Validate Service Category
         if (serviceCategoryId) {
@@ -196,37 +167,25 @@ export class ServiceSubCategoryService extends BaseService {
     }
 
     async findOne(id: number) {
-
-        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
-            where: { id, trash: false },
-        });
-
-        if (!serviceTypeExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
-        }
-
-        const serviceCatExists = await this.ServiceCatRepo.findOne({
-            where: { id, trash: false },
-        });
-
-        if (!serviceCatExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
-        }
-
-        const ServiceSubCategory = await this.ServiceSubCategoryRepo.findOne({
-            where: { id, trash: false },
+        const serviceSubCategory = await this.ServiceSubCategoryRepo.findOne({
+            where: {
+                id,
+                trash: false,
+            },
             relations: {
                 serviceCategory: {
-                    serviceType: true
-                }
+                    serviceType: true,
+                },
             },
         });
 
-        if (!ServiceSubCategory) {
-            throw new BadRequestException(MESSAGES.SERVICE_SUB_CATEGORY_NOT_FOUND);
+        if (!serviceSubCategory) {
+            throw new BadRequestException(
+                MESSAGES.SERVICE_SUB_CATEGORY_NOT_FOUND,
+            );
         }
 
-        return ServiceSubCategory;
+        return serviceSubCategory;
     }
 
     async update(
@@ -235,26 +194,18 @@ export class ServiceSubCategoryService extends BaseService {
         adminId: number,
         file?: Express.Multer.File,
     ) {
-        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
-            where: {
-                id: dto.serviceTypeId,
-                trash: false,
-            },
-        });
-
-        if (!serviceTypeExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
-        }
-
-        const serviceCatExists = await this.ServiceCatRepo.findOne({
+        const serviceCategory = await this.ServiceCatRepo.findOne({
             where: {
                 id: dto.serviceCategoryId,
+                serviceTypeId: dto.serviceTypeId,
                 trash: false,
             },
         });
 
-        if (!serviceCatExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        if (!serviceCategory) {
+            throw new BadRequestException(
+                'Selected Service Category does not belong to the selected Service Type.',
+            );
         }
         const ServiceSubCategory = await this.findOne(id);
 
@@ -282,9 +233,11 @@ export class ServiceSubCategoryService extends BaseService {
         }
 
         Object.assign(ServiceSubCategory, {
-            ...dto,
+            serviceCategoryId: dto.serviceCategoryId,
+            title: dto.title,
             position: dto.position ?? ServiceSubCategory.position,
             status: dto.status ?? ServiceSubCategory.status,
+            icon: dto.icon ?? ServiceSubCategory.icon,
         });
 
         ServiceSubCategory.updatedBy = adminId;
