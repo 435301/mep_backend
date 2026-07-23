@@ -16,6 +16,8 @@ import { ServiceCategory } from '../serviceCategories/entities/service-category.
 import { ServiceSubCategory } from '../serviceSubCategory/entities/service-sub-category.entity';
 import { State } from '../states/entities/state.entity';
 import { District } from '../districts/entities/district.entity';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
 
 @Injectable()
 export class VendorsService extends BaseService {
@@ -348,6 +350,15 @@ export class VendorsService extends BaseService {
         return {
             message: MESSAGES.VENDOR_DELETED,
         };
+    }
+
+    async bulkStatus(dto: BulkStatusDto, adminId: number) {
+        return BulkStatusHelper.updateStatus(
+            this.vendorRepo,
+            dto.ids,
+            dto.status,
+            adminId,
+        );
     }
 
     // Change Status

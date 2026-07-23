@@ -22,6 +22,7 @@ import { iconUploadConfig } from 'src/common/utils/uploads.utils';
 import { ListVendorDto } from './dto/list-vendor-dto';
 import { UpdateVendorDto } from './dto/update-vendor-dto';
 import { ROUTES } from 'src/common/constants/routes.constant';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 
 @Controller(`${ROUTES.ADMIN}/vendors`)
 @UseGuards(AuthGuard('jwt'))
@@ -66,6 +67,18 @@ export class VendorsController {
   @Delete('delete/:id')
   remove(@Param('id') id: number, @Req() req) {
     return this.service.remove(+id, req.user.id);
+  }
+
+
+  @Patch('bulk-status')
+  async bulkStatus(
+    @Body() dto: BulkStatusDto,
+    @Req() req: any,
+  ) {
+    return this.service.bulkStatus(
+      dto,
+      req.user.id,
+    );
   }
 
   // Change Status
