@@ -55,7 +55,7 @@ export class StateService extends BaseService {
         } else {
             qb.orderBy('state.name', 'ASC');
         }
-        const data = this.paginate(qb, page, limit, pagination);
+        const data = await this.paginate(qb, page, limit, pagination);
         return {
             ...data,
             message: MESSAGES.STATE_FETCHED_SUCCESS

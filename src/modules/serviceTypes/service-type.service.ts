@@ -69,7 +69,7 @@ export class ServiceTypeService extends BaseService {
         } else {
             qb.orderBy('ServiceType.title', 'ASC');
         }
-        
+
         const data = await this.paginate(qb, page, limit, pagination);
         return {
             ...data,
@@ -95,6 +95,15 @@ export class ServiceTypeService extends BaseService {
         dto: UpdateServiceTypeDto,
         adminId: number,
     ) {
+        const exists = await this.ServiceTypeRepo.findOne({
+            where: { title: dto.title, trash: false },
+        });
+
+        if (exists) {
+            throw new BadRequestException(
+                MESSAGES.SERVICE_TYPE_ALREADY_EXISTS,
+            );
+        }
         const ServiceType = await this.findOne(id);
 
         Object.assign(ServiceType, {
