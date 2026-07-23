@@ -125,25 +125,23 @@ export class ServiceCategoryService extends BaseService {
     }
 
     async findOne(id: number) {
-        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
-            where: { id, trash: false },
-        });
-
-        if (!serviceTypeExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
-        }
-        const ServiceCategory = await this.ServiceCategoryRepo.findOne({
-            where: { id, trash: false },
+        const serviceCategory = await this.ServiceCategoryRepo.findOne({
+            where: {
+                id,
+                trash: false,
+            },
             relations: {
-                serviceType: true
+                serviceType: true,
             },
         });
 
-        if (!ServiceCategory) {
-            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        if (!serviceCategory) {
+            throw new BadRequestException(
+                MESSAGES.SERVICE_CATEGORY_NOT_FOUND,
+            );
         }
 
-        return ServiceCategory;
+        return serviceCategory;
     }
 
     async update(
@@ -152,16 +150,19 @@ export class ServiceCategoryService extends BaseService {
         adminId: number,
         file?: Express.Multer.File,
     ) {
-        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
-            where: {
-                id: dto.serviceTypeId,
-                trash: false,
-            },
-        });
+        if (dto.serviceTypeId) {
+            const serviceType = await this.ServiceTypeRepo.findOne({
+                where: {
+                    id: dto.serviceTypeId,
+                    trash: false,
+                },
+            });
 
-        if (!serviceTypeExists) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+            if (!serviceType) {
+                throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+            }
         }
+
         const ServiceCategory = await this.findOne(id);
 
         const fs = require('fs');
