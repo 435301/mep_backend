@@ -10,3 +10,8 @@ export function TrimAndClean() {
       .replace(/\s+/g, ' '); // normalize spaces
   });
 }
+
+
+export function AlphaNumeric(){
+  
+}

@@ -57,11 +57,11 @@ export class DistrictService extends BaseService {
         });
 
         await this.districtRepo.save(district);
-        return { message: 'District created successfully', district };
+        return { message: 'District created successfully' };
     }
 
-    async findAll(dto, stateId?: number) {
-        const { page, limit, search, pagination, status } = dto;
+    async findAll(dto) {
+        const { page, limit, search, pagination, status, stateId } = dto;
 
         const qb = this.districtRepo
             .createQueryBuilder('district')
@@ -69,26 +69,43 @@ export class DistrictService extends BaseService {
             .where('district.trash = :trash', { trash: false });
 
         if (stateId) {
-            qb.andWhere('district.state_id = :stateId', { stateId });
-        }
-
-        if (typeof status === 'boolean') {
-            qb.andWhere('district.status = :status', { status });
-        }
-
-        if (search && search.trim().length >= 3) {
-            qb.andWhere('district.name LIKE :search', {
-                search: `%${search.trim()}%`,
+            const stateExists = await this.stateRepo.findOne({
+                where: {
+                    id: stateId,
+                    trash: false,
+                },
             });
-        }
-        if (pagination) {
-            qb.orderBy('district.createdAt', 'DESC');
-        } else {
-            qb.orderBy('district.name', 'ASC');
-        }
-        return this.paginate(qb, page, limit, pagination);
-    }
 
+            if (!stateExists) {
+                throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
+            }
+
+            if (stateId) {
+                qb.andWhere('district.state_id = :stateId', { stateId });
+            }
+
+            if (typeof status === 'boolean') {
+                qb.andWhere('district.status = :status', { status });
+            }
+
+            if (search && search.trim().length >= 3) {
+                qb.andWhere('district.name LIKE :search', {
+                    search: `%${search.trim()}%`,
+                });
+            }
+            if (pagination) {
+                qb.orderBy('district.createdAt', 'DESC');
+            } else {
+                qb.orderBy('district.name', 'ASC');
+            }
+            const data = this.paginate(qb, page, limit, pagination);
+            return {
+                ...data,
+                message: MESSAGES.DISTRICT_FETCHED_SUCCESS
+            }
+        }
+
+    }
 
     async findOne(id: number) {
         const district = await this.districtRepo.findOne({
@@ -97,6 +114,13 @@ export class DistrictService extends BaseService {
                 state: true
             },
         });
+        const state = await this.stateRepo.findOne({
+            where: { id, trash: false },
+        });
+
+        if (!state) {
+            throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
+        }
 
         if (!district) {
             throw new BadRequestException(MESSAGES.DISTRICT_NOT_FOUND);
@@ -120,7 +144,7 @@ export class DistrictService extends BaseService {
         district.updatedBy = adminId;
 
         await this.districtRepo.save(district);
-        return { message: MESSAGES.DISTRICT_UPDATED, district };
+        return { message: MESSAGES.DISTRICT_UPDATED };
     }
 
     async remove(id: number, adminId: number) {

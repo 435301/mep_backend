@@ -7,6 +7,7 @@ import { CreateServiceTypeDto } from './dto/create-service-type-dto';
 import { UpdateServiceTypeDto } from './dto/update-service-type-dto';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ServiceTypeService } from './service-type.service';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 
 
 @Controller('admin/serviceType')
@@ -16,7 +17,7 @@ export class ServiceTypeController {
 
   @Post('create')
   async create(
-    
+
     @Body() dto: CreateServiceTypeDto,
     @Req() req: any,
   ) {
@@ -42,21 +43,32 @@ export class ServiceTypeController {
     @Body() dto: UpdateServiceTypeDto,
     @Req() req: any,
   ) {
-    return this.service.update(id, dto, req.user?.id );
+    return this.service.update(id, dto, req.user?.id);
   }
 
   @Delete('delete/:id')
   remove(@Param('id') id: number, @Req() req) {
     return this.service.remove(+id, req.user.id);
   }
+
+  @Patch('bulk-status')
+  async bulkStatus(
+    @Body() dto: BulkStatusDto,
+    @Req() req: any,
+  ) {
+    return this.service.bulkStatus(
+      dto,
+      req.user.id,
+    );
+  }
 }
 
 @Controller('users/Service-types')
 @UseGuards(JwtAuthGuard)
 export class ServiceTypeFrontendController {
-    constructor(private readonly service: ServiceTypeService) { }
-    @Get('list')
-    findActive() {
-        return this.service.findActive();
-    }
+  constructor(private readonly service: ServiceTypeService) { }
+  @Get('list')
+  findActive() {
+    return this.service.findActive();
+  }
 }

@@ -31,7 +31,7 @@ export class StateService extends BaseService {
         });
 
         await this.stateRepo.save(state);
-        return { message: MESSAGES.STATE_CREATED, state };
+        return { message: MESSAGES.STATE_CREATED };
     }
 
     async findAll(dto) {
@@ -78,7 +78,7 @@ export class StateService extends BaseService {
         state.updatedBy = adminId;
 
         await this.stateRepo.save(state);
-        return { message: MESSAGES.STATE_UPDATED, state };
+        return { message: MESSAGES.STATE_UPDATED };
     }
 
     async remove(id: number, adminId: number) {

@@ -6,6 +6,10 @@ import { MESSAGES } from 'src/common/constants/status.constants';
 import { ServiceSubCategory } from './entities/service-sub-category.entity';
 import { CreateServiceSubCategoryDto } from './dto/create-service-sub-category-dto';
 import { UpdateServiceSubCategoryDto } from './dto/update-service-sub-category-dto';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
+import { ServiceType } from '../serviceTypes/entities/service-type.entity';
+import { ServiceCategory } from '../serviceCategories/entities/service-category.entity';
 
 
 @Injectable()
@@ -13,6 +17,11 @@ export class ServiceSubCategoryService extends BaseService {
     constructor(
         @InjectRepository(ServiceSubCategory)
         private ServiceSubCategoryRepo: Repository<ServiceSubCategory>,
+        @InjectRepository(ServiceType)
+        private ServiceTypeRepo: Repository<ServiceType>,
+        @InjectRepository(ServiceType)
+        private ServiceCatRepo: Repository<ServiceCategory>,
+
     ) {
         super();
     }
@@ -30,6 +39,29 @@ export class ServiceSubCategoryService extends BaseService {
                 }
             },
         });
+
+        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
+            where: {
+                id: dto.serviceTypeId,
+                trash: false,
+            },
+        });
+
+        if (!serviceTypeExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
+
+        const serviceCatExists = await this.ServiceCatRepo.findOne({
+            where: {
+                id: dto.serviceCategoryId,
+                trash: false,
+            },
+        });
+
+        if (!serviceCatExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        }
+
 
         if (exists) {
             throw new BadRequestException(
@@ -53,10 +85,9 @@ export class ServiceSubCategoryService extends BaseService {
 
         category.createdBy = adminId;
         try {
-            const result = await this.ServiceSubCategoryRepo.save(category);
+            const data = await this.ServiceSubCategoryRepo.save(category);
             return {
                 message: MESSAGES.SERVICE_SUB_CATEGORY_CREATED,
-                result
             }
         } catch (error) {
             const fs = require('fs');
@@ -137,6 +168,27 @@ export class ServiceSubCategoryService extends BaseService {
         adminId: number,
         file?: Express.Multer.File,
     ) {
+        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
+            where: {
+                id: dto.serviceTypeId,
+                trash: false,
+            },
+        });
+
+        if (!serviceTypeExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
+
+        const serviceCatExists = await this.ServiceCatRepo.findOne({
+            where: {
+                id: dto.serviceCategoryId,
+                trash: false,
+            },
+        });
+
+        if (!serviceCatExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        }
         const ServiceSubCategory = await this.findOne(id);
 
         const fs = require('fs');
@@ -173,7 +225,7 @@ export class ServiceSubCategoryService extends BaseService {
 
         return {
             message: MESSAGES.SERVICE_SUB_CATEGORY_UPDATED,
-            ServiceSubCategory,
+        
         };
     }
 
@@ -184,6 +236,15 @@ export class ServiceSubCategoryService extends BaseService {
 
         await this.ServiceSubCategoryRepo.save(ServiceSubCategory);
         return { message: MESSAGES.SERVICE_SUB_CATEGORY_DELETED };
+    }
+
+    async bulkStatus(dto: BulkStatusDto, adminId: number) {
+        return BulkStatusHelper.updateStatus(
+            this.ServiceSubCategoryRepo,
+            dto.ids,
+            dto.status,
+            adminId,
+        );
     }
 
     //frontend apis 

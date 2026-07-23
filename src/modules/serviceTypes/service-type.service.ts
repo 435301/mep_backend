@@ -6,6 +6,8 @@ import { MESSAGES } from 'src/common/constants/status.constants';
 import { ServiceType } from './entities/service-type.entity';
 import { CreateServiceTypeDto } from './dto/create-service-type-dto';
 import { UpdateServiceTypeDto } from './dto/update-service-type-dto';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
 
 @Injectable()
 export class ServiceTypeService extends BaseService {
@@ -37,10 +39,9 @@ export class ServiceTypeService extends BaseService {
 
         category.createdBy = adminId;
         try {
-            const result = await this.ServiceTypeRepo.save(category);
+            const data = await this.ServiceTypeRepo.save(category);
             return {
                 message: MESSAGES.SERVICE_TYPE_CREATED,
-                result
             }
         } catch (error) {
             throw error;
@@ -102,7 +103,6 @@ export class ServiceTypeService extends BaseService {
 
         return {
             message: MESSAGES.SERVICE_TYPE_UPDATED,
-            ServiceType,
         };
     }
 
@@ -113,6 +113,16 @@ export class ServiceTypeService extends BaseService {
 
         await this.ServiceTypeRepo.save(ServiceType);
         return { message: MESSAGES.SERVICE_TYPE_DELETED };
+    }
+
+
+    async bulkStatus(dto: BulkStatusDto, adminId: number) {
+        return BulkStatusHelper.updateStatus(
+            this.ServiceTypeRepo,
+            dto.ids,
+            dto.status,
+            adminId,
+        );
     }
 
     //frontend apis 

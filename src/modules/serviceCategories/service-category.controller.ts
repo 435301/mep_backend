@@ -7,6 +7,7 @@ import { CreateServiceCategoryDto } from './dto/create-service-category-dto';
 import { UpdateServiceCategoryDto } from './dto/update-service-category-dto';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ListServiceCategoryDto } from './dto/service-category-list-dto';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 
 
 @Controller('admin/serviceCategory')
@@ -46,21 +47,33 @@ export class ServiceCategoryController {
     @Body() dto: UpdateServiceCategoryDto,
     @Req() req: any,
   ) {
-    return this.service.update(id, dto, req.user?.id , file);
+    return this.service.update(id, dto, req.user?.id, file);
   }
 
   @Delete('delete/:id')
   remove(@Param('id') id: number, @Req() req) {
     return this.service.remove(+id, req.user.id);
   }
+
+  @Patch('bulk-status')
+  async bulkStatus(
+    @Body() dto: BulkStatusDto,
+    @Req() req: any,
+  ) {
+    return this.service.bulkStatus(
+      dto,
+      req.user.id,
+    );
+  }
+
 }
 
 @Controller('users/serviceCategory')
 @UseGuards(JwtAuthGuard)
 export class ServiceCategoryFrontendController {
-    constructor(private readonly service: ServiceCategoryService) { }
-    @Get('list')
-    findActive() {
-        return this.service.findActive();
-    }
+  constructor(private readonly service: ServiceCategoryService) { }
+  @Get('list')
+  findActive() {
+    return this.service.findActive();
+  }
 }

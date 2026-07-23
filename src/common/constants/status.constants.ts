@@ -32,6 +32,9 @@ export const MESSAGES = {
     NEW_OLD_PASSWORD: 'New password cannot be the same as the old password',
     CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
     ICON_REQUIRED: "Icon required",
+    PLEASE_SELECT_RECORDS: 'Please select records.',
+    NO_VALID_RECORDS_FOUND: 'No valid records found',
+    TILE_CONTAIN_NUMBERS: 'Title cannot contain only numbers',
 
 
     //state
@@ -40,12 +43,15 @@ export const MESSAGES = {
     STATE_NOT_FOUND: 'State not found',
     STATE_UPDATED: 'State updated successfully',
     STATE_DELETED: 'State deleted successfully',
+    STATE_FETCHED_SUCCESS: 'State fetched successfully',
+
     //district
     DISTRICT_ALREADY_EXISTS: 'District already exists',
     DISTRICT_CREATED: 'District created successfully',
     DISTRICT_NOT_FOUND: 'District not found',
     DISTRICT_UPDATED: 'District updated successfully',
     DISTRICT_DELETED: 'District deleted successfully',
+    DISTRICT_FETCHED_SUCCESS: 'Distrcit fetched successfully',
 
     //service types
     SERVICE_TYPE_ALREADY_EXISTS: 'Service type already exists',
@@ -53,6 +59,7 @@ export const MESSAGES = {
     SERVICE_TYPE_NOT_FOUND: 'Service type not found',
     SERVICE_TYPE_UPDATED: 'Service type updated successfully',
     SERVICE_TYPE_DELETED: 'Service type deleted successfully',
+    SERVICE_TYPE_FETCHED_SUCCESS: 'Service type fetched successfully',
 
     //service categories
     SERVICE_CATEGORY_ALREADY_EXISTS: 'Service category already exists',
@@ -60,6 +67,7 @@ export const MESSAGES = {
     SERVICE_CATEGORY_NOT_FOUND: 'Service category not found',
     SERVICE_CATEGORY_UPDATED: 'Service category updated successfully',
     SERVICE_CATEGORY_DELETED: 'Service category deleted successfully',
+    SERVICE_CATEGORY_FETCHED_SUCCESS: 'Service category fetched successfully',
 
     //service sub categories
     SERVICE_SUB_CATEGORY_ALREADY_EXISTS: 'Service sub category already exists',
@@ -67,4 +75,5 @@ export const MESSAGES = {
     SERVICE_SUB_CATEGORY_NOT_FOUND: 'Service sub category not found',
     SERVICE_SUB_CATEGORY_UPDATED: 'Service sub category updated successfully',
     SERVICE_SUB_CATEGORY_DELETED: 'Service sub category deleted successfully',
+    SERVICE_SUB_CATEGORY_FETCHED_SUCCESS: 'Service sub category fetched successfully',
 }
