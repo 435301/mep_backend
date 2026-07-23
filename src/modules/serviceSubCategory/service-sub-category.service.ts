@@ -106,7 +106,6 @@ export class ServiceSubCategoryService extends BaseService {
             status,
             serviceCategoryId,
         } = dto;
-
         const qb = this.ServiceSubCategoryRepo
             .createQueryBuilder('serviceSubCategory')
             .leftJoinAndSelect(
@@ -134,12 +133,9 @@ export class ServiceSubCategoryService extends BaseService {
                 );
             }
 
-            qb.andWhere(
-                'serviceSubCategory.serviceCategoryId = :serviceCategoryId',
-                {
-                    serviceCategoryId,
-                },
-            );
+            qb.andWhere('serviceCategory.id = :serviceCategoryId', {
+                serviceCategoryId,
+            });
         }
 
         if (typeof status === 'boolean') {
@@ -151,7 +147,6 @@ export class ServiceSubCategoryService extends BaseService {
                 search: `%${search.trim()}%`,
             });
         }
-
         if (pagination) {
             qb.orderBy('serviceSubCategory.createdAt', 'DESC');
         } else {
