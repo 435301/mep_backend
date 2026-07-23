@@ -10,6 +10,7 @@ import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 import { BulkStatusHelper } from 'src/common/services/bulk.service';
 import { ServiceType } from '../serviceTypes/entities/service-type.entity';
 import { ServiceCategory } from '../serviceCategories/entities/service-category.entity';
+import { FileUrlHelper } from 'src/common/utils/file-url.helper';
 
 
 @Injectable()
@@ -107,53 +108,91 @@ export class ServiceSubCategoryService extends BaseService {
     }
 
     async findAll(dto) {
-        const { page, limit, search, pagination, status, serviceTypeId, serviceCategoryId } = dto;
+        const {
+            page,
+            limit,
+            search,
+            pagination,
+            status,
+            serviceTypeId,
+            serviceCategoryId,
+        } = dto;
 
         const qb = this.ServiceSubCategoryRepo
-            .createQueryBuilder('ServiceSubCategory')
+            .createQueryBuilder('serviceSubCategory')
             .leftJoinAndSelect(
-                "ServiceSubCategory.serviceCategory",
-                "serviceCategory",
+                'serviceSubCategory.serviceCategory',
+                'serviceCategory',
             )
             .leftJoinAndSelect(
-                "serviceCategory.serviceType",
-                "serviceType",
+                'serviceCategory.serviceType',
+                'serviceType',
             )
-            .where('ServiceSubCategory.trash = :trash', { trash: false });
+            .where('serviceSubCategory.trash = :trash', { trash: false });
 
-        if (!serviceTypeId) {
-            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        // Validate Service Type
+        if (serviceTypeId) {
+            const serviceType = await this.ServiceTypeRepo.findOne({
+                where: {
+                    id: serviceTypeId,
+                    trash: false,
+                },
+            });
+
+            if (!serviceType) {
+                throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+            }
+
+            qb.andWhere('serviceCategory.serviceTypeId = :serviceTypeId', {
+                serviceTypeId,
+            });
         }
-        if (!serviceCategoryId) {
-            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+
+        // Validate Service Category
+        if (serviceCategoryId) {
+            const serviceCategory = await this.ServiceCatRepo.findOne({
+                where: {
+                    id: serviceCategoryId,
+                    trash: false,
+                },
+            });
+
+            if (!serviceCategory) {
+                throw new BadRequestException(
+                    MESSAGES.SERVICE_CATEGORY_NOT_FOUND,
+                );
+            }
+
+            qb.andWhere(
+                'serviceSubCategory.serviceCategoryId = :serviceCategoryId',
+                {
+                    serviceCategoryId,
+                },
+            );
         }
 
         if (typeof status === 'boolean') {
-            qb.andWhere('ServiceSubCategory.status = :status', { status });
+            qb.andWhere('serviceSubCategory.status = :status', { status });
         }
 
         if (search && search.trim().length >= 3) {
-            qb.andWhere('ServiceSubCategory.title LIKE :search', {
+            qb.andWhere('serviceSubCategory.title LIKE :search', {
                 search: `%${search.trim()}%`,
             });
         }
-        if (serviceTypeId) {
-            qb.andWhere('ServiceSubCategory.serviceTypeId = :serviceTypeId', { serviceTypeId });
-        }
-        if (serviceCategoryId) {
-            qb.andWhere('ServiceSubCategory.serviceCategoryId = :serviceCategoryId', { serviceCategoryId });
-        }
+
         if (pagination) {
-            qb.orderBy('ServiceSubCategory.createdAt', 'DESC');
+            qb.orderBy('serviceSubCategory.createdAt', 'DESC');
         } else {
-            qb.orderBy('ServiceSubCategory.title', 'ASC');
-        }
-        const data = this.paginate(qb, page, limit, pagination);
-        return {
-            ...data,
-            message: MESSAGES.SERVICE_SUB_CATEGORY_FETCHED_SUCCESS
+            qb.orderBy('serviceSubCategory.title', 'ASC');
         }
 
+        const data = await this.paginate(qb, page, limit, pagination);
+        data.data = FileUrlHelper.mapArray(data.data);
+        return {
+            ...data,
+            message: MESSAGES.SERVICE_SUB_CATEGORY_FETCHED_SUCCESS,
+        };
     }
 
     async findOne(id: number) {

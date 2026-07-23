@@ -11,27 +11,27 @@ export interface PaginationResponse<T> {
 
 export class BaseService {
   protected async paginate<T extends ObjectLiteral>(
-  qb: SelectQueryBuilder<T>,
-  page = 1,
-  limit = 15,
-  pagination = true,
-) {
-   page = page && page > 0 ? page : 1;
-  limit = limit && limit > 0 ? limit : 15;
-  if (pagination) {
-    qb.skip((page - 1) * limit).take(limit);
+    qb: SelectQueryBuilder<T>,
+    page = 1,
+    limit = 15,
+    pagination = true,
+  ) {
+    page = page && page > 0 ? page : 1;
+    limit = limit && limit > 0 ? limit : 15;
+    if (pagination) {
+      qb.skip((page - 1) * limit).take(limit);
+    }
+
+    const [data, total] = await qb.getManyAndCount();
+
+    return {
+      data: instanceToPlain(data) as T[],
+      total,
+      page: pagination ? page : 1,
+      limit: pagination ? limit : total,
+      totalPages: pagination ? Math.ceil(total / limit) : 1,
+    };
   }
-
-  const [data, total] = await qb.getManyAndCount();
-
-  return {
-    data: instanceToPlain(data),
-    total,
-    page: pagination ? page : 1,
-    limit: pagination ? limit : total,
-    totalPages: pagination ? Math.ceil(total / limit) : 1,
-  };
-}
 
 }
 

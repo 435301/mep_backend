@@ -9,6 +9,7 @@ import { CreateServiceCategoryDto } from './dto/create-service-category-dto';
 import { UpdateServiceCategoryDto } from './dto/update-service-category-dto';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 import { BulkStatusHelper } from 'src/common/services/bulk.service';
+import { FileUrlHelper } from 'src/common/utils/file-url.helper';
 
 @Injectable()
 export class ServiceCategoryService extends BaseService {
@@ -114,7 +115,8 @@ export class ServiceCategoryService extends BaseService {
         } else {
             qb.orderBy('ServiceCategory.title', 'ASC');
         }
-        const data = this.paginate(qb, page, limit, pagination);
+        const data = await this.paginate(qb, page, limit, pagination);
+        data.data = FileUrlHelper.mapArray(data.data);
         return {
             ...data,
             message: MESSAGES.SERVICE_CATEGORY_FETCHED_SUCCESS
