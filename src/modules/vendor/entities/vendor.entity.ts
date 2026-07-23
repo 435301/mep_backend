@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { AuditEntity } from 'src/common/entity/base.entity';
@@ -21,7 +23,7 @@ export enum CommissionType {
 @Entity('vendors')
 export class Vendor extends AuditEntity {
   @PrimaryGeneratedColumn()
-  id !: number;
+  id!: number;
 
   @Column({ name: 'vendor_name' })
   vendorName!: string;
@@ -32,23 +34,14 @@ export class Vendor extends AuditEntity {
   @Column({ unique: true })
   email!: string;
 
-  @Column({ name: 'profile_image', nullable: true })
-  profileImage!: string | null;
-
-  @Column({ name: 'service_type_id' })
-  serviceTypeId!: number;
-
-  @Column({ name: 'service_category_id' })
-  serviceCategoryId!: number;
-
-  @Column({ name: 'service_sub_category_id' })
-  serviceSubCategoryId!: number;
+  @Column({
+    name: 'profile_image',
+    nullable: true,
+  })
+  icon!: string;
 
   @Column({ name: 'pan_number' })
   panNumber!: string;
-
-  @Column({ name: 'state_id' })
-  stateId!: number;
 
   @Column({ name: 'district_id' })
   districtId!: number;
@@ -95,23 +88,26 @@ export class Vendor extends AuditEntity {
   @Column({ default: true })
   status!: boolean;
 
+  // ===========================
   // Relations
+  // ===========================
 
-  @ManyToOne(() => ServiceType)
-  @JoinColumn({ name: 'service_type_id' })
-  serviceType!: ServiceType;
-
-  @ManyToOne(() => ServiceCategory)
-  @JoinColumn({ name: 'service_category_id' })
-  serviceCategory!: ServiceCategory;
-
-  @ManyToOne(() => ServiceSubCategory)
-  @JoinColumn({ name: 'service_sub_category_id' })
-  serviceSubCategory!: ServiceSubCategory;
-
-  @ManyToOne(() => State)
-  @JoinColumn({ name: 'state_id' })
-  state!: State;
+  @ManyToMany(
+    () => ServiceSubCategory,
+    (subCategory) => subCategory.vendors,
+  )
+  @JoinTable({
+    name: 'vendor_service_sub_categories',
+    joinColumn: {
+      name: 'vendor_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'service_sub_category_id',
+      referencedColumnName: 'id',
+    },
+  })
+  serviceSubCategories!: ServiceSubCategory[];
 
   @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id' })

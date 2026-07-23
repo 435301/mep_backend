@@ -1,7 +1,8 @@
 import { IsOptional } from "class-validator";
+import { PaginationDto } from "src/common/dto/pagination.dto";
 
 
-export class ListVendorDto {
+export class ListVendorDto extends PaginationDto{
     @IsOptional()
     serviceTypeId?: number;
 

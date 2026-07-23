@@ -21,8 +21,9 @@ import { CreateVendorDto } from './dto/create-vendor-dto';
 import { iconUploadConfig } from 'src/common/utils/uploads.utils';
 import { ListVendorDto } from './dto/list-vendor-dto';
 import { UpdateVendorDto } from './dto/update-vendor-dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
-@Controller('admin/vendors')
+@Controller(`${ROUTES.ADMIN}/vendors`)
 @UseGuards(AuthGuard('jwt'))
 export class VendorsController {
   constructor(private readonly service: VendorsService) { }
@@ -59,7 +60,7 @@ export class VendorsController {
     @Body() dto: UpdateVendorDto,
     @Req() req: any,
   ) {
-    return this.service.update(id, dto, req.user?.id , file);
+    return this.service.update(id, dto, req.user?.id, file);
   }
 
   @Delete('delete/:id')
@@ -67,7 +68,7 @@ export class VendorsController {
     return this.service.remove(+id, req.user.id);
   }
 
-   // Change Status
+  // Change Status
   @Patch(':id/status')
   async changeStatus(
     @Param('id', ParseIntPipe) id: number,

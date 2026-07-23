@@ -76,4 +76,18 @@ export const MESSAGES = {
     SERVICE_SUB_CATEGORY_UPDATED: 'Service sub category updated successfully',
     SERVICE_SUB_CATEGORY_DELETED: 'Service sub category deleted successfully',
     SERVICE_SUB_CATEGORY_FETCHED_SUCCESS: 'Service sub category fetched successfully',
+
+    //vendors
+    MOBILE_NUMBER_EXISTS:'Mobile number already exists',
+    VENDOR_CREATED:'Vendor created successfully',
+    VENDOR_FETCHED_SUCCESS:'Vendor fetched successfully',
+    VENDOR_NOT_FOUND:'Vendor not found',
+    EMAIL_EXISTS:'Email already exists',
+    VENDOR_UPDATED:'Vendor updated successfully',
+    VENDOR_DELETED:'Vendor deleted successfully',
+    STATUS_SUCCESS:'Status updated successfully',
+    PAN_EXISTS: 'Pan exists',
+    ACCOUNT_EXISTS: 'Account exists',
+
+
 }

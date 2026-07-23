@@ -8,6 +8,9 @@ import {
     IsBoolean,
     Matches,
     Min,
+    IsArray,
+    ArrayNotEmpty,
+    IsInt,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { CommissionType } from '../entities/vendor.entity';
@@ -35,34 +38,27 @@ export class CreateVendorDto {
     @IsNotEmpty()
     email!: string;
 
-    @IsString()
-    @IsNotEmpty()
-    profileImage!: string;
-
+    @Transform(({ value }) => Number(value))
     @Type(() => Number)
     @IsNumber()
-    @IsNotEmpty()
     serviceTypeId!: number;
 
+    @Transform(({ value }) => Number(value))
     @Type(() => Number)
     @IsNumber()
-    @IsNotEmpty()
     serviceCategoryId!: number;
 
+    @IsArray()
+    @ArrayNotEmpty()
     @Type(() => Number)
-    @IsNumber()
-    @IsNotEmpty()
-    serviceSubCategoryId!: number;
+    @IsInt({ each: true })
+    serviceSubCategoryIds!: number[];
 
     @IsString()
     @Matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, {
         message: 'Invalid PAN number.',
     })
     panNumber!: string;
-
-    @Type(() => Number)
-    @IsNumber()
-    stateId!: number;
 
     @Type(() => Number)
     @IsNumber()

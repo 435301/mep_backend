@@ -8,8 +8,13 @@ import {
 } from '@nestjs/common';
 
 @Catch()
+@Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
+    console.error('========== EXCEPTION ==========');
+    console.error(exception);
+    console.error(exception.stack);
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
