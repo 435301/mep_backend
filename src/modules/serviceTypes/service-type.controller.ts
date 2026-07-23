@@ -8,9 +8,10 @@ import { UpdateServiceTypeDto } from './dto/update-service-type-dto';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ServiceTypeService } from './service-type.service';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
 
-@Controller('admin/serviceType')
+@Controller(`${ROUTES.ADMIN}/serviceType`)
 @UseGuards(AuthGuard('jwt'))
 export class ServiceTypeController {
   constructor(private readonly service: ServiceTypeService) { }

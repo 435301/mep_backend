@@ -8,9 +8,10 @@ import { UpdateServiceCategoryDto } from './dto/update-service-category-dto';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ListServiceCategoryDto } from './dto/service-category-list-dto';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
 
-@Controller('admin/serviceCategory')
+@Controller(`${ROUTES.ADMIN}/serviceCategory`)
 @UseGuards(AuthGuard('jwt'))
 export class ServiceCategoryController {
   constructor(private readonly service: ServiceCategoryService) { }

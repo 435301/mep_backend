@@ -32,10 +32,11 @@ import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
 import { StateResponseDto } from './dto/response-dto';
 import { StateListResponseDto } from './dto/state-list-response.dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
 @ApiTags('Admin - States')
 @ApiBearerAuth('JWT-auth')
-@Controller('admin/states')
+@Controller(`${ROUTES.ADMIN}/states`)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(1)
 export class StateController {

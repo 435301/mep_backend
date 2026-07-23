@@ -23,8 +23,9 @@ import { RolesGuard } from 'src/gaurds/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
 import { ListDistrictDto } from './dto/llist-dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
-@Controller('admin/districts')
+@Controller(`${ROUTES.ADMIN}/districts`)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(1, 2)
 export class DistrictController {

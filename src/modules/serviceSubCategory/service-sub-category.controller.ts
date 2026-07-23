@@ -8,10 +8,9 @@ import { CreateServiceSubCategoryDto } from './dto/create-service-sub-category-d
 import { ListServiceSubCategoryDto } from './dto/service-sub-category-list-dto';
 import { UpdateServiceSubCategoryDto } from './dto/update-service-sub-category-dto';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { ROUTES } from 'src/common/constants/routes.constant';
 
-
-
-@Controller('admin/serviceSubCategory')
+@Controller(`${ROUTES.ADMIN}/serviceSubCategory`)
 @UseGuards(AuthGuard('jwt'))
 export class ServiceSubCategoryController {
   constructor(private readonly service: ServiceSubCategoryService) { }
