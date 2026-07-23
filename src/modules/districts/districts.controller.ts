@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/gaurds/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/gaurds/jwt-auth.gaurd';
+import { ListDistrictDto } from './dto/llist-dto';
 
 @Controller('admin/districts')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -35,7 +36,7 @@ export class DistrictController {
   }
 
   @Post('list')
-  findAll(@Body() dto: PaginationDto) {
+  findAll(@Body() dto: ListDistrictDto) {
     return this.districtService.findAll(dto);
   }
 

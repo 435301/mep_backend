@@ -69,7 +69,12 @@ export class ServiceTypeService extends BaseService {
         } else {
             qb.orderBy('ServiceType.title', 'ASC');
         }
-        return this.paginate(qb, page, limit, pagination);
+        
+        const data = this.paginate(qb, page, limit, pagination);
+        return {
+            ...data,
+            message: MESSAGES.SERVICE_TYPE_FETCHED_SUCCESS
+        }
 
     }
 

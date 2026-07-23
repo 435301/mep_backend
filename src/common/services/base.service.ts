@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { SelectQueryBuilder, ObjectLiteral } from 'typeorm';
 
 export interface PaginationResponse<T> {
@@ -24,7 +25,7 @@ export class BaseService {
   const [data, total] = await qb.getManyAndCount();
 
   return {
-    data,
+    data: instanceToPlain(data),
     total,
     page: pagination ? page : 1,
     limit: pagination ? limit : total,

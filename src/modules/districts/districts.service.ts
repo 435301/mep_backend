@@ -57,7 +57,7 @@ export class DistrictService extends BaseService {
         });
 
         await this.districtRepo.save(district);
-        return { message: 'District created successfully' };
+        return { message: MESSAGES.DISTRICT_CREATED };
     }
 
     async findAll(dto) {
@@ -80,93 +80,92 @@ export class DistrictService extends BaseService {
                 throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
             }
 
-            if (stateId) {
-                qb.andWhere('district.state_id = :stateId', { stateId });
-            }
-
-            if (typeof status === 'boolean') {
-                qb.andWhere('district.status = :status', { status });
-            }
-
-            if (search && search.trim().length >= 3) {
-                qb.andWhere('district.name LIKE :search', {
-                    search: `%${search.trim()}%`,
-                });
-            }
-            if (pagination) {
-                qb.orderBy('district.createdAt', 'DESC');
-            } else {
-                qb.orderBy('district.name', 'ASC');
-            }
-            const data = this.paginate(qb, page, limit, pagination);
-            return {
-                ...data,
-                message: MESSAGES.DISTRICT_FETCHED_SUCCESS
-            }
+            qb.andWhere('district.state_id = :stateId', { stateId });
         }
 
+        if (typeof status === 'boolean') {
+            qb.andWhere('district.status = :status', { status });
+        }
+
+        if (search && search.trim().length >= 3) {
+            qb.andWhere('district.name LIKE :search', {
+                search: `%${search.trim()}%`,
+            });
+        }
+        if (pagination) {
+            qb.orderBy('district.createdAt', 'DESC');
+        } else {
+            qb.orderBy('district.name', 'ASC');
+        }
+        const data = await this.paginate(qb, page, limit, pagination);
+        return {
+            ...data,
+            message: MESSAGES.DISTRICT_FETCHED_SUCCESS
+        }
     }
 
+
+
     async findOne(id: number) {
-        const district = await this.districtRepo.findOne({
-            where: { id, trash: false },
-            relations: {
-                state: true
-            },
-        });
+    const district = await this.districtRepo.findOne({
+        where: { id, trash: false },
+        relations: {
+            state: true
+        },
+    });
+    const state = await this.stateRepo.findOne({
+        where: { id, trash: false },
+    });
+
+    if (!state) {
+        throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
+    }
+
+    if (!district) {
+        throw new BadRequestException(MESSAGES.DISTRICT_NOT_FOUND);
+    }
+
+    return district;
+}
+
+    async update(id: number, dto: UpdateDistrictDto, adminId: number) {
+    const district = await this.findOne(id);
+    if (dto.stateId) {
         const state = await this.stateRepo.findOne({
-            where: { id, trash: false },
+            where: { id: dto.stateId, trash: false, status: true },
         });
 
         if (!state) {
             throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
         }
-
-        if (!district) {
-            throw new BadRequestException(MESSAGES.DISTRICT_NOT_FOUND);
-        }
-
-        return district;
     }
+    Object.assign(district, dto);
+    district.updatedBy = adminId;
 
-    async update(id: number, dto: UpdateDistrictDto, adminId: number) {
-        const district = await this.findOne(id);
-        if (dto.stateId) {
-            const state = await this.stateRepo.findOne({
-                where: { id: dto.stateId, trash: false, status: true },
-            });
-
-            if (!state) {
-                throw new BadRequestException(MESSAGES.STATE_NOT_FOUND);
-            }
-        }
-        Object.assign(district, dto);
-        district.updatedBy = adminId;
-
-        await this.districtRepo.save(district);
-        return { message: MESSAGES.DISTRICT_UPDATED };
-    }
+    await this.districtRepo.save(district);
+    return { message: MESSAGES.DISTRICT_UPDATED };
+}
 
     async remove(id: number, adminId: number) {
-        const district = await this.findOne(id);
+    const district = await this.findOne(id);
 
-        district.trash = true;
-        district.updatedBy = adminId;
+    district.trash = true;
+    district.updatedBy = adminId;
 
-        await this.districtRepo.save(district);
-        return { message: MESSAGES.DISTRICT_DELETED };
-    }
+    await this.districtRepo.save(district);
+    return { message: MESSAGES.DISTRICT_DELETED };
+}
 
 
     async findActive(stateId: number) {
-        const qb = this.districtRepo
-            .createQueryBuilder('district')
-            .leftJoinAndSelect('district.state', 'state')
-            .where('district.trash = :trash', { trash: false })
-            .andWhere('district.status = :status', { status: true })
-            .andWhere('district.state_id = :stateId', { stateId })
-            .orderBy('district.name', 'ASC');
-        return this.paginate(qb);
-    }
+    const qb = this.districtRepo
+        .createQueryBuilder('district')
+        .leftJoinAndSelect('district.state', 'state')
+        .where('district.trash = :trash', { trash: false })
+        .andWhere('district.status = :status', { status: true })
+        .andWhere('district.state_id = :stateId', { stateId })
+        .orderBy('district.name', 'ASC');
+    return this.paginate(qb);
+}
 
 }

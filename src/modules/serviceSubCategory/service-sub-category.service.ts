@@ -121,6 +121,13 @@ export class ServiceSubCategoryService extends BaseService {
             )
             .where('ServiceSubCategory.trash = :trash', { trash: false });
 
+        if (!serviceTypeId) {
+            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
+        if (!serviceCategoryId) {
+            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        }
+
         if (typeof status === 'boolean') {
             qb.andWhere('ServiceSubCategory.status = :status', { status });
         }
@@ -141,11 +148,32 @@ export class ServiceSubCategoryService extends BaseService {
         } else {
             qb.orderBy('ServiceSubCategory.title', 'ASC');
         }
-        return this.paginate(qb, page, limit, pagination);
+        const data = this.paginate(qb, page, limit, pagination);
+        return {
+            ...data,
+            message: MESSAGES.SERVICE_SUB_CATEGORY_FETCHED_SUCCESS
+        }
 
     }
 
     async findOne(id: number) {
+
+        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
+            where: { id, trash: false },
+        });
+
+        if (!serviceTypeExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
+
+        const serviceCatExists = await this.ServiceCatRepo.findOne({
+            where: { id, trash: false },
+        });
+
+        if (!serviceCatExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_CATEGORY_NOT_FOUND);
+        }
+
         const ServiceSubCategory = await this.ServiceSubCategoryRepo.findOne({
             where: { id, trash: false },
             relations: {
@@ -225,7 +253,7 @@ export class ServiceSubCategoryService extends BaseService {
 
         return {
             message: MESSAGES.SERVICE_SUB_CATEGORY_UPDATED,
-        
+
         };
     }
 

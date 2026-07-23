@@ -55,7 +55,11 @@ export class StateService extends BaseService {
         } else {
             qb.orderBy('state.name', 'ASC');
         }
-        return this.paginate(qb, page, limit, pagination);
+        const data = this.paginate(qb, page, limit, pagination);
+        return {
+            ...data,
+            message: MESSAGES.STATE_FETCHED_SUCCESS
+        }
     }
 
 
@@ -90,7 +94,7 @@ export class StateService extends BaseService {
         await this.stateRepo.save(state);
         return { message: MESSAGES.STATE_DELETED };
     }
-    
+
     async findActive() {
         const qb = this.stateRepo
             .createQueryBuilder('state')

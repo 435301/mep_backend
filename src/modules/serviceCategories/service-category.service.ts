@@ -114,11 +114,22 @@ export class ServiceCategoryService extends BaseService {
         } else {
             qb.orderBy('ServiceCategory.title', 'ASC');
         }
-        return this.paginate(qb, page, limit, pagination);
+        const data = this.paginate(qb, page, limit, pagination);
+        return {
+            ...data,
+            message: MESSAGES.SERVICE_CATEGORY_FETCHED_SUCCESS
+        }
 
     }
 
     async findOne(id: number) {
+        const serviceTypeExists = await this.ServiceTypeRepo.findOne({
+            where: { id, trash: false },
+        });
+
+        if (!serviceTypeExists) {
+            throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
         const ServiceCategory = await this.ServiceCategoryRepo.findOne({
             where: { id, trash: false },
             relations: {
