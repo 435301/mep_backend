@@ -31,6 +31,18 @@ export class ServiceTypeService extends BaseService {
                 MESSAGES.SERVICE_TYPE_ALREADY_EXISTS,
             );
         }
+        if (dto.position) {
+            const existingPosition = await this.ServiceTypeRepo.findOne({
+                where: {
+                    position: dto.position,
+                    trash: false,
+                },
+            });
+
+            if (existingPosition) {
+                throw new BadRequestException(MESSAGES.POSITION_ALREADY_EXISTS);
+            }
+        }
         const category = this.ServiceTypeRepo.create({
             title: dto.title,
             position: dto.position ?? 0,

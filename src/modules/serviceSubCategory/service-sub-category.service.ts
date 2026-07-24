@@ -62,6 +62,18 @@ export class ServiceSubCategoryService extends BaseService {
         if (!file) {
             throw new BadRequestException(MESSAGES.ICON_REQUIRED);
         }
+        if (dto.position) {
+            const existingPosition = await this.ServiceSubCategoryRepo.findOne({
+                where: {
+                    position: dto.position,
+                    trash: false,
+                },
+            });
+
+            if (existingPosition) {
+                throw new BadRequestException(MESSAGES.POSITION_ALREADY_EXISTS);
+            }
+        }
 
         const iconPath = `ServiceSubCategory/${file.filename}`;
 

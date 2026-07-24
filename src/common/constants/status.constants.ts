@@ -35,6 +35,7 @@ export const MESSAGES = {
     PLEASE_SELECT_RECORDS: 'Please select records.',
     NO_VALID_RECORDS_FOUND: 'No valid records found',
     TILE_CONTAIN_NUMBERS: 'Title cannot contain only numbers',
+    POSITION_ALREADY_EXISTS:'Position already exists',
 
 
     //state

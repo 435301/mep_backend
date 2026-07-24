@@ -10,6 +10,7 @@ import { UpdateServiceCategoryDto } from './dto/update-service-category-dto';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 import { BulkStatusHelper } from 'src/common/services/bulk.service';
 import { FileUrlHelper } from 'src/common/utils/file-url.helper';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class ServiceCategoryService extends BaseService {
@@ -52,7 +53,18 @@ export class ServiceCategoryService extends BaseService {
         if (!file) {
             throw new BadRequestException(MESSAGES.ICON_REQUIRED);
         }
+        if (dto.position) {
+            const existingPosition = await this.ServiceCategoryRepo.findOne({
+                where: {
+                    position: dto.position,
+                    trash: false,
+                },
+            });
 
+            if (existingPosition) {
+                throw new BadRequestException(MESSAGES.POSITION_ALREADY_EXISTS);
+            }
+        }
         const iconPath = `ServiceCategory/${file.filename}`;
 
         const category = this.ServiceCategoryRepo.create({
