@@ -143,6 +143,7 @@ export class VendorsService extends BaseService {
             icon: iconPath,
             panNumber: dto.panNumber,
             districtId: dto.districtId,
+            city: dto.city,
             location: dto.location,
             pincode: dto.pincode,
             address: dto.address,

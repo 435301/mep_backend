@@ -47,6 +47,9 @@ export class Vendor extends AuditEntity {
   districtId!: number;
 
   @Column()
+  city!: string;
+
+  @Column()
   location!: string;
 
   @Column()

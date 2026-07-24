@@ -65,6 +65,10 @@ export class CreateVendorDto {
     districtId!: number;
 
     @IsString()
+    @IsOptional()
+    city!: string;
+
+    @IsString()
     location!: string;
 
     @IsString()
