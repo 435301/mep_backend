@@ -1,8 +1,13 @@
 import { BASE_URL } from "../constants/base-url.constant";
 
+export const FILE_BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'http://mep.zenxpos.com'
+    : 'http://localhost:8000';
+
 export class FileUrlHelper {
   static getUrl(path?: string | null): string | null {
-    return path ? `${BASE_URL}/uploads/${path}` : null;
+    return path ? `${FILE_BASE_URL}/uploads/${path}` : null;
   }
 
   static mapArray<T extends { icon?: string | null }>(items: T[]): T[] {
