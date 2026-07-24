@@ -1,9 +1,4 @@
-import { BASE_URL } from "../constants/base-url.constant";
 
-export const FILE_BASE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'http://mep.zenxpos.com'
-    : 'http://localhost:8000';
 
 export class FileUrlHelper {
   static getUrl(path?: string | null): string | null {
