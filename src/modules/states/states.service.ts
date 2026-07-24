@@ -19,6 +19,7 @@ export class StateService extends BaseService {
     }
 
     async create(dto: CreateStateDto, adminId: number) {
+        console.log(dto);
         const exists = await this.stateRepo.findOne({
             where: { name: dto.name, trash: false },
         });
