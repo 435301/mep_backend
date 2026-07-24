@@ -38,7 +38,6 @@ export class StateService extends BaseService {
     }
 
     async findAll(dto) {
-        console.log('get api')
         const { page, limit, search, pagination, status } = dto;
 
         const qb = this.stateRepo
