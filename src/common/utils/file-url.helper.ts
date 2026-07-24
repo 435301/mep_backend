@@ -1,6 +1,8 @@
+import { BASE_URL } from "../constants/base-url.constant";
+
 export class FileUrlHelper {
   static getUrl(path?: string | null): string | null {
-    return path ? `${process.env.BASE_URL}/uploads/${path}` : null;
+    return path ? `${BASE_URL}/uploads/${path}` : null;
   }
 
   static mapArray<T extends { icon?: string | null }>(items: T[]): T[] {
