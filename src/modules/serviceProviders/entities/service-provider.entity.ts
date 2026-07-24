@@ -141,4 +141,7 @@ export class ServiceProvider extends AuditEntity {
     },
   })
   serviceSubCategories!: ServiceSubCategory[];
+
+  @Column({ default: true })
+  status!: boolean;
 }

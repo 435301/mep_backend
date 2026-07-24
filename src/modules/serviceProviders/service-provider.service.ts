@@ -16,6 +16,8 @@ import { ServiceSubCategory } from '../serviceSubCategory/entities/service-sub-c
 import { FileUrlHelper } from 'src/common/utils/file-url.helper';
 import { BulkStatusDto } from 'src/common/dto/bulk.dto';
 import { BulkStatusHelper } from 'src/common/services/bulk.service';
+import { ServiceType } from '../serviceTypes/entities/service-type.entity';
+import { ServiceCategory } from '../serviceCategories/entities/service-category.entity';
 
 @Injectable()
 export class ServiceProviderService extends BaseService {
@@ -34,6 +36,11 @@ export class ServiceProviderService extends BaseService {
 
     @InjectRepository(ServiceSubCategory)
     private readonly subCategoryRepo: Repository<ServiceSubCategory>,
+
+    @InjectRepository(ServiceType)
+    private readonly serviceTypeRepo: Repository<ServiceType>,
+    @InjectRepository(ServiceCategory)
+    private readonly serviceCategoryRepo: Repository<ServiceCategory>,
   ) {
     super();
   }
@@ -43,7 +50,20 @@ export class ServiceProviderService extends BaseService {
     adminId: number,
     file?: Express.Multer.File,
   ) {
-    console.log('dto', dto)
+    const mobileExists = await this.providerRepo.findOne({
+      where: { mobile: dto.mobile },
+    });
+
+    if (mobileExists) {
+      throw new BadRequestException(MESSAGES.MOBILE_NUMBER_EXISTS);
+    }
+
+    const emailExists = await this.providerRepo.findOne({
+      where: { email: dto.email },
+    });
+    if (emailExists) {
+      throw new BadRequestException(MESSAGES.EMAIL_EXISTS);
+    }
     const district = await this.districtRepo.findOne({
       where: {
         id: dto.districtId,
@@ -82,13 +102,42 @@ export class ServiceProviderService extends BaseService {
       throw new BadRequestException(MESSAGES.LANGUAGE_NOT_FOUND);
     }
 
-
-    const subCategories = await this.subCategoryRepo.find({
+    // Validate Service Type
+    const serviceType = await this.serviceTypeRepo.findOne({
       where: {
-        id: In(dto.serviceSubCategoryIds),
+        id: dto.serviceTypeId,
         trash: false,
       },
     });
+
+    if (!serviceType) {
+      throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+    }
+
+    // Validate Service Category belongs to Service Type
+    const category = await this.serviceCategoryRepo.findOne({
+      where: {
+        id: dto.serviceCategoryId,
+        serviceTypeId: dto.serviceTypeId,
+        trash: false,
+      },
+    });
+
+    if (!category) {
+      throw new BadRequestException(
+        'Selected Service Category does not belong to the selected Service Type.',
+      );
+    }
+
+    // Validate all selected Sub Categories belong to the selected Category
+    const subCategories = await this.subCategoryRepo.find({
+      where: {
+        id: In(dto.serviceSubCategoryIds),
+        serviceCategoryId: dto.serviceCategoryId,
+        trash: false,
+      },
+    });
+
     if (!file) {
       throw new BadRequestException(MESSAGES.PROFILE_IMAGE_REQUIRED
       );
@@ -112,7 +161,6 @@ export class ServiceProviderService extends BaseService {
 
     return {
       message: MESSAGES.SERVICE_PROVIDER_CREATED,
-      data: provider,
     };
   }
 
