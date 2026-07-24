@@ -1,5 +1,6 @@
 import { AuditEntity } from 'src/common/entity/base.entity';
 import { ServiceCategory } from 'src/modules/serviceCategories/entities/service-category.entity';
+import { ServiceProvider } from 'src/modules/serviceProviders/entities/service-provider.entity';
 import { ServiceType } from 'src/modules/serviceTypes/entities/service-type.entity';
 import { Vendor } from 'src/modules/vendor/entities/vendor.entity';
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToOne, JoinColumn, ManyToMany } from 'typeorm';
@@ -30,4 +31,7 @@ export class ServiceSubCategory extends AuditEntity {
 
     @ManyToMany(() => Vendor, (vendor) => vendor.serviceSubCategories)
     vendors!: Vendor[];
+
+    @ManyToMany(() => ServiceProvider, (service) => service.serviceSubCategories)
+    serviceProviders!: ServiceProvider[];
 }

@@ -1,6 +1,8 @@
+import { AuditEntity } from 'src/common/entity/base.entity';
 import { District } from 'src/modules/districts/entities/district.entity';
 import { Experience } from 'src/modules/experience/entities/experience.entity';
 import { Language } from 'src/modules/languages/entities/language.entity';
+import { ServiceSubCategory } from 'src/modules/serviceSubCategory/entities/service-sub-category.entity';
 import { State } from 'src/modules/states/entities/state.entity';
 import {
   Entity,
@@ -10,6 +12,8 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 
@@ -19,23 +23,24 @@ export enum RegisteredAs {
 }
 
 @Entity('service_providers')
-export class ServiceProvider {
+export class ServiceProvider extends AuditEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column({
     type: 'enum',
     enum: RegisteredAs,
+    name: 'registered_as'
   })
   registeredAs!: RegisteredAs;
 
   @Column({ length: 60 })
   name!: string;
 
-  @Column({ unique: true, length: 60 })
+  @Column({ unique: true })
   email!: string;
 
-  @Column({ unique: true, length: 10 })
+  @Column({ unique: true })
   mobile!: string;
 
   @Column({
@@ -49,39 +54,37 @@ export class ServiceProvider {
   })
   age!: number;
 
-  @Column({
-    nullable: true,
-  })
-  profileImage!: string;
+  @Column({ nullable: true, name: 'profile_image' })
+  icon !: string;
 
   @Column({
-    nullable: true,
+    nullable: true, name: 'experience_id'
   })
   experienceId!: number;
 
   @ManyToOne(() => Experience)
-  @JoinColumn({ name: 'experienceId' })
+  @JoinColumn({ name: 'experience_id' })
   experience!: Experience;
 
   @Column({
-    nullable: true,
+    nullable: true, name: 'language_id'
   })
   languageId!: number;
 
   @ManyToOne(() => Language)
-  @JoinColumn({ name: 'languageId' })
+  @JoinColumn({ name: 'language_id' })
   language!: Language;
 
   @Column({
-    default: true,
+    default: true, name: 'service_available'
   })
   serviceAvailable!: boolean;
 
-  @Column()
+  @Column({ name: 'district_id' })
   districtId!: number;
 
   @ManyToOne(() => District)
-  @JoinColumn({ name: 'districtId' })
+  @JoinColumn({ name: 'district_id' })
   district!: District;
 
   @Column({
@@ -122,29 +125,20 @@ export class ServiceProvider {
   })
   address!: string;
 
-  @Column({
-    default: true,
+  @ManyToMany(
+    () => ServiceSubCategory,
+    (subCategory) => subCategory.serviceProviders,
+  )
+  @JoinTable({
+    name: 'service_provider_sub_categories',
+    joinColumn: {
+      name: 'service_provider_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'service_sub_category_id',
+      referencedColumnName: 'id',
+    },
   })
-  status!: boolean;
-
-  @Column({
-    default: false,
-  })
-  trash!: boolean;
-
-  @Column({
-    nullable: true,
-  })
-  createdBy!: number;
-
-  @Column({
-    nullable: true,
-  })
-  updatedBy!: number;
-
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
+  serviceSubCategories!: ServiceSubCategory[];
 }

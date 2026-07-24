@@ -91,7 +91,11 @@ export const MESSAGES = {
 
     //service providers
     EXPERIENCE_NOT_FOUND: 'Experience not found',
-    LANGUAGE_NOT_FOUND: 'Language not found'
-
+    LANGUAGE_NOT_FOUND: 'Language not found',
+    SERVICE_PROVIDER_CREATED:'Service provider created successfully',
+    SERVICE_PROVIDER_FETCHED_SUCCESS:'Service provider fetched successfully',
+    SERVICE_PROVIDER_UPDATED: 'Service provider updated successfully',
+    SERVICE_PROVIDER_DELETED:'Service provider deleted successfully',
+SERVICE_PROVIDER_NOT_FOUND: 'Service provider not found',
 
 }

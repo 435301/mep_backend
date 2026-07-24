@@ -50,8 +50,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 8000);
 
-  console.log(`Application: http://localhost:8000/api/v1`);
-  console.log(`Swagger: http://localhost:8000/swagger`);
-  console.log(process.env.BASE_URL);
 }
 bootstrap();

@@ -14,6 +14,7 @@ import { ServiceTypeModule } from './modules/serviceTypes/service-type.module';
 import { ServiceCategoryModule } from './modules/serviceCategories/service-category.module';
 import { ServiceSubCategoryModule } from './modules/serviceSubCategory/service-sub-category.module';
 import { VendorsModule } from './modules/vendor/vendor.module';
+import { ServiceProviderModule } from './modules/serviceProviders/service-provider.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { VendorsModule } from './modules/vendor/vendor.module';
     ServiceTypeModule,
     ServiceCategoryModule,
     ServiceSubCategoryModule,
-    VendorsModule
+    VendorsModule,
+    ServiceProviderModule
   ],
   controllers: [AppController],
   providers: [AppService],

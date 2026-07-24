@@ -3,7 +3,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateServiceProviderDto } from './dto/create-service-provider.dto';
 import { UpdateServiceProviderDto } from './dto/update-service-provider.dto';
 import { ServiceProvider } from './entities/service-provider.entity';
@@ -12,6 +12,10 @@ import { District } from '../districts/entities/district.entity';
 import { Experience } from '../experience/entities/experience.entity';
 import { Language } from '../languages/entities/language.entity';
 import { MESSAGES } from 'src/common/constants/status.constants';
+import { ServiceSubCategory } from '../serviceSubCategory/entities/service-sub-category.entity';
+import { FileUrlHelper } from 'src/common/utils/file-url.helper';
+import { BulkStatusDto } from 'src/common/dto/bulk.dto';
+import { BulkStatusHelper } from 'src/common/services/bulk.service';
 
 @Injectable()
 export class ServiceProviderService extends BaseService {
@@ -27,37 +31,26 @@ export class ServiceProviderService extends BaseService {
 
     @InjectRepository(Language)
     private readonly languageRepo: Repository<Language>,
+
+    @InjectRepository(ServiceSubCategory)
+    private readonly subCategoryRepo: Repository<ServiceSubCategory>,
   ) {
     super();
   }
 
-  async create(dto: CreateServiceProviderDto, user: any) {
-    const emailExists = await this.providerRepo.findOne({
-      where: {
-        email: dto.email,
-        trash: false,
-      },
-    });
-
-    if (emailExists) {
-      throw new BadRequestException(MESSAGES.EMAIL_EXISTS);
-    }
-
-    const mobileExists = await this.providerRepo.findOne({
-      where: {
-        mobile: dto.mobile,
-        trash: false,
-      },
-    });
-
-    if (mobileExists) {
-      throw new BadRequestException(MESSAGES.MOBILE_NUMBER_EXISTS);
-    }
-
+  async create(
+    dto: CreateServiceProviderDto,
+    adminId: number,
+    file?: Express.Multer.File,
+  ) {
+    console.log('dto', dto)
     const district = await this.districtRepo.findOne({
       where: {
         id: dto.districtId,
         trash: false,
+      },
+      relations: {
+        state: true,
       },
     });
 
@@ -65,71 +58,137 @@ export class ServiceProviderService extends BaseService {
       throw new BadRequestException(MESSAGES.DISTRICT_NOT_FOUND);
     }
 
-    if (dto.experienceId) {
-      const experience = await this.experienceRepo.findOne({
-        where: {
-          id: dto.experienceId,
-          trash: false,
-        },
-      });
 
-      if (!experience) {
-        throw new BadRequestException(MESSAGES.EXPERIENCE_NOT_FOUND);
-      }
+    const experience = await this.experienceRepo.findOne({
+      where: {
+        id: dto.experienceId,
+        trash: false,
+      },
+    });
+
+    if (!experience) {
+      throw new BadRequestException(MESSAGES.EXPERIENCE_NOT_FOUND);
     }
 
-    if (dto.languageId) {
-      const language = await this.languageRepo.findOne({
-        where: {
-          id: dto.languageId,
-          trash: false,
-        },
-      });
 
-      if (!language) {
-        throw new BadRequestException(MESSAGES.LANGUAGE_NOT_FOUND);
-      }
+    const language = await this.languageRepo.findOne({
+      where: {
+        id: dto.languageId,
+        trash: false,
+      },
+    });
+
+    if (!language) {
+      throw new BadRequestException(MESSAGES.LANGUAGE_NOT_FOUND);
     }
+
+
+    const subCategories = await this.subCategoryRepo.find({
+      where: {
+        id: In(dto.serviceSubCategoryIds),
+        trash: false,
+      },
+    });
+    if (!file) {
+      throw new BadRequestException(MESSAGES.PROFILE_IMAGE_REQUIRED
+      );
+    }
+    const iconPath = `serviceProviders/${file.filename}`;
 
     const provider = this.providerRepo.create({
       ...dto,
-      createdBy: user?.id,
+      icon: iconPath,
+      districtId: district.id,
+      experienceId: experience?.id,
+      languageId: language?.id,
+      district,
+      experience,
+      language,
+      serviceSubCategories: subCategories,
+      createdBy: adminId,
     });
 
     await this.providerRepo.save(provider);
+
     return {
-      message: 'Service provider created successfully',
+      message: MESSAGES.SERVICE_PROVIDER_CREATED,
+      data: provider,
     };
   }
 
-  async findAll(dto: any) {
-    const { page, limit, pagination, search, status } = dto;
+  async findAll(dto) {
+    const {
+      page,
+      limit,
+      pagination,
+      search,
+      status,
+      serviceTypeId,
+      serviceCategoryId,
+      serviceSubCategoryId,
+      districtId,
+    } = dto;
 
     const qb = this.providerRepo
       .createQueryBuilder('provider')
-      .leftJoinAndSelect('provider.state', 'state')
+      .leftJoinAndSelect(
+        'provider.serviceSubCategories',
+        'serviceSubCategory',
+      )
+      .leftJoinAndSelect(
+        'serviceSubCategory.serviceCategory',
+        'serviceCategory',
+      )
+      .leftJoinAndSelect(
+        'serviceCategory.serviceType',
+        'serviceType',
+      )
       .leftJoinAndSelect('provider.district', 'district')
+      .leftJoinAndSelect('district.state', 'state')
       .leftJoinAndSelect('provider.experience', 'experience')
       .leftJoinAndSelect('provider.language', 'language')
-      .where('provider.trash = :trash', {
-        trash: false,
-      });
+      .where('provider.trash = false');
 
-    if (typeof status === 'boolean') {
-      qb.andWhere('provider.status = :status', {
-        status,
-      });
+    if (status !== undefined) {
+      qb.andWhere('provider.status = :status', { status });
     }
 
     if (search && search.trim().length >= 3) {
       qb.andWhere(
         `(provider.name LIKE :search
-        OR provider.email LIKE :search
-        OR provider.mobile LIKE :search)`,
+      OR provider.email LIKE :search
+      OR provider.mobile LIKE :search)`,
         {
           search: `%${search}%`,
         },
       );
+    }
+
+    if (serviceTypeId) {
+      qb.andWhere('serviceType.id = :serviceTypeId', {
+        serviceTypeId,
+      });
+    }
+
+    if (serviceCategoryId) {
+      qb.andWhere('serviceCategory.id = :serviceCategoryId', {
+        serviceCategoryId,
+      });
+    }
+
+    if (serviceSubCategoryId?.length) {
+      qb.andWhere(
+        'serviceSubCategory.id IN (:...serviceSubCategoryId)',
+        {
+          serviceSubCategoryId,
+        },
+      );
+    }
+
+    if (districtId) {
+      qb.andWhere('provider.districtId = :districtId', {
+        districtId,
+      });
     }
 
     qb.orderBy('provider.createdAt', 'DESC');
@@ -141,9 +200,11 @@ export class ServiceProviderService extends BaseService {
       pagination,
     );
 
+    data.data = FileUrlHelper.mapArray(data.data);
+
     return {
       ...data,
-      message: 'Service providers fetched successfully',
+      message: MESSAGES.SERVICE_PROVIDER_FETCHED_SUCCESS,
     };
   }
 
@@ -154,54 +215,146 @@ export class ServiceProviderService extends BaseService {
         trash: false,
       },
       relations: {
-        district: true,
+        district: {
+          state: true,
+        },
         experience: true,
         language: true,
+        serviceSubCategories: {
+          serviceCategory: {
+            serviceType: true,
+          },
+        },
       },
     });
 
     if (!provider) {
       throw new BadRequestException(
-        'Service provider not found',
+        MESSAGES.SERVICE_PROVIDER_NOT_FOUND,
       );
     }
 
     return {
       data: provider,
-      message: 'Service provider fetched successfully',
+      message: MESSAGES.SERVICE_PROVIDER_FETCHED_SUCCESS,
     };
   }
-
   async update(
     id: number,
     dto: UpdateServiceProviderDto,
-    user: any,
+    adminId: number,
+    file?: Express.Multer.File,
+
   ) {
     const provider = await this.providerRepo.findOne({
       where: {
         id,
         trash: false,
       },
+      relations: {
+        serviceSubCategories: true,
+      },
     });
 
     if (!provider) {
       throw new BadRequestException(
-        'Service provider not found',
+        MESSAGES.SERVICE_PROVIDER_NOT_FOUND,
       );
     }
 
-    Object.assign(provider, dto);
-    provider.updatedBy = user?.id;
+    if (dto.districtId) {
+      const district = await this.districtRepo.findOne({
+        where: {
+          id: dto.districtId,
+          trash: false,
+        },
+      });
+
+      if (!district) {
+        throw new BadRequestException(
+          MESSAGES.DISTRICT_NOT_FOUND,
+        );
+      }
+
+      provider.district = district;
+      provider.districtId = district.id;
+    }
+    if (dto.mobile) {
+      const mobile = await this.providerRepo.findOne({
+        where: {
+          mobile: dto.mobile,
+        },
+      });
+
+      if (mobile && mobile.id !== id) {
+        throw new BadRequestException(MESSAGES.MOBILE_NUMBER_EXISTS);
+      }
+    }
+    if (dto.email) {
+      const email = await this.providerRepo.findOne({
+        where: {
+          email: dto.email,
+        },
+      });
+
+      if (email && email.id !== id) {
+        throw new BadRequestException(MESSAGES.EMAIL_EXISTS);
+      }
+    }
+
+    if (dto.experienceId) {
+      const experience = await this.experienceRepo.findOne({
+        where: {
+          id: dto.experienceId,
+          trash: false,
+        },
+      });
+      if (!experience) {
+        throw new BadRequestException(MESSAGES.EXPERIENCE_NOT_FOUND);
+      }
+
+      provider.experience = experience;
+      provider.experienceId = experience.id;
+    }
+
+    if (dto.languageId) {
+      const language = await this.languageRepo.findOne({
+        where: {
+          id: dto.languageId,
+          trash: false,
+        },
+      });
+      if (!language) {
+        throw new BadRequestException(MESSAGES.LANGUAGE_NOT_FOUND);
+      }
+
+      provider.language = language;
+      provider.languageId = language.id;
+    }
+
+    if (dto.serviceSubCategoryIds?.length) {
+      provider.serviceSubCategories =
+        await this.subCategoryRepo.find({
+          where: {
+            id: In(dto.serviceSubCategoryIds),
+            trash: false,
+          },
+        });
+    }
+    if (file) {
+      provider.icon = file.filename;
+    }
+
+    Object.assign(provider, dto, adminId);
 
     await this.providerRepo.save(provider);
 
     return {
-      data: provider,
-      message: 'Service provider updated successfully',
+      message: MESSAGES.SERVICE_PROVIDER_UPDATED,
     };
   }
 
-  async remove(id: number, user: any) {
+  async remove(id: number, adminId: number) {
     const provider = await this.providerRepo.findOne({
       where: {
         id,
@@ -211,41 +364,26 @@ export class ServiceProviderService extends BaseService {
 
     if (!provider) {
       throw new BadRequestException(
-        'Service provider not found',
+        MESSAGES.SERVICE_PROVIDER_NOT_FOUND,
       );
     }
 
     provider.trash = true;
-    provider.updatedBy = user?.id;
+    provider.updatedBy = adminId
 
     await this.providerRepo.save(provider);
 
     return {
-      message: 'Service provider deleted successfully',
+      message: MESSAGES.SERVICE_PROVIDER_DELETED,
     };
   }
 
-  async changeStatus(id: number) {
-    const provider = await this.providerRepo.findOne({
-      where: {
-        id,
-        trash: false,
-      },
-    });
-
-    if (!provider) {
-      throw new BadRequestException(
-        'Service provider not found',
-      );
-    }
-
-    provider.status = !provider.status;
-
-    await this.providerRepo.save(provider);
-
-    return {
-      data: provider,
-      message: 'Status updated successfully',
-    };
+  async bulkStatus(dto: BulkStatusDto, adminId: number) {
+    return BulkStatusHelper.updateStatus(
+      this.providerRepo,
+      dto.ids,
+      dto.status,
+      adminId,
+    );
   }
 }
