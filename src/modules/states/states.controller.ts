@@ -70,6 +70,7 @@ export class StateController {
   findAll(
     @Body() dto: PaginationDto,
   ) {
+    console.log('get controller')
     return this.stateService.findAll(dto);
   }
 
