@@ -390,10 +390,11 @@ export class ServiceProviderService extends BaseService {
         });
     }
     if (file) {
-      provider.icon = file.filename;
+      provider.icon = `serviceProviders/${file.filename}`;
     }
 
-    Object.assign(provider, dto, adminId);
+    Object.assign(provider, dto);
+    provider.updatedBy = adminId;
 
     await this.providerRepo.save(provider);
 
