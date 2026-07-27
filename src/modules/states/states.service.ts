@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { State } from './entities/state.entity';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
@@ -81,7 +81,19 @@ export class StateService extends BaseService {
 
     async update(id: number, dto: UpdateStateDto, adminId: number) {
         const state = await this.findOne(id);
+        if (dto.name) {
+            const existingState = await this.stateRepo.findOne({
+                where: {
+                    name: dto.name,
+                    trash: false,
+                    id: Not(id),
+                },
+            });
 
+            if (existingState) {
+                throw new BadRequestException(MESSAGES.STATE_ALREADY_EXISTS);
+            }
+        }
         Object.assign(state, dto);
         state.updatedBy = adminId;
 
