@@ -47,7 +47,7 @@ export class CreateServiceProviderDto {
     // icon?: string;
 
     @IsString()
-    @IsOptional()
+    @IsNotEmpty()
     @Matches(/^[6-9]\d{9}$/, {
         message: 'Mobile number must be a valid 10-digit Indian mobile number.',
     })
@@ -78,6 +78,7 @@ export class CreateServiceProviderDto {
     serviceAvailable?: boolean;
 
     @IsNumber()
+    @IsNotEmpty()
     @Type(() => Number)
     districtId!: number;
 
@@ -104,6 +105,7 @@ export class CreateServiceProviderDto {
     @Matches(/^[1-9][0-9]{5}$/, {
         message: 'Invalid pincode.',
     })
+    @IsNotEmpty()
     pincode !: string;
 
     @IsOptional()
@@ -130,7 +132,7 @@ export class CreateServiceProviderDto {
         if (value === 'false') return false;
         return value;
     })
-    @IsOptional()
+    @IsNotEmpty()
     @IsBoolean()
     status?: boolean;
 }
