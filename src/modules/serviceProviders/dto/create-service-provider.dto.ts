@@ -44,6 +44,10 @@ export class CreateServiceProviderDto {
 
     @IsString()
     @IsOptional()
+    icon?: string;
+
+    @IsString()
+    @IsOptional()
     @Matches(/^[6-9]\d{9}$/, {
         message: 'Mobile number must be a valid 10-digit Indian mobile number.',
     })
@@ -121,7 +125,7 @@ export class CreateServiceProviderDto {
     @IsInt({ each: true })
     serviceSubCategoryIds !: number[];
 
-     @Transform(({ value }) => {
+    @Transform(({ value }) => {
         if (value === 'true') return true;
         if (value === 'false') return false;
         return value;
