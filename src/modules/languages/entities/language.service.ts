@@ -34,8 +34,6 @@ async findAll(dto: PaginationDto) {
     });
   }
 
-  qb.orderBy('language.position', 'ASC');
-
   const data = await this.paginate(
     qb,
     page,

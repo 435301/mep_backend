@@ -33,8 +33,6 @@ async findAll(dto: PaginationDto) {
     });
   }
 
-  qb.orderBy('experience.position', 'ASC');
-
   const data = await this.paginate(
     qb,
     page,
