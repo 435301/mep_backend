@@ -89,13 +89,18 @@ export class VendorsService extends BaseService {
         }
 
         // Validate all selected Sub Categories belong to the selected Category
+        const subCategoryIds = Array.isArray(dto.serviceSubCategoryIds)
+            ? dto.serviceSubCategoryIds
+            : [dto.serviceSubCategoryIds];
+
         const subCategories = await this.serviceSubCategoryRepo.find({
             where: {
-                id: In(dto.serviceSubCategoryIds),
+                id: In(subCategoryIds),
                 serviceCategoryId: dto.serviceCategoryId,
                 trash: false,
             },
         });
+
 
         // Ensure all selected ids are valid
         if (subCategories.length !== dto.serviceSubCategoryIds.length) {

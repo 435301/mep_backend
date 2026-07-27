@@ -48,8 +48,14 @@ export class CreateVendorDto {
     @IsNumber()
     serviceCategoryId!: number;
 
-    // @IsArray()
-    // @ArrayNotEmpty()
+    @IsArray()
+    @Transform(({ value }) => {
+        if (Array.isArray(value)) {
+            return value.map(Number);
+        }
+
+        return value ? [Number(value)] : [];
+    })
     @Type(() => Number)
     @IsInt({ each: true })
     serviceSubCategoryIds!: number[];
