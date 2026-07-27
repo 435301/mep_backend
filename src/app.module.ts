@@ -15,6 +15,8 @@ import { ServiceCategoryModule } from './modules/serviceCategories/service-categ
 import { ServiceSubCategoryModule } from './modules/serviceSubCategory/service-sub-category.module';
 import { VendorsModule } from './modules/vendor/vendor.module';
 import { ServiceProviderModule } from './modules/serviceProviders/service-provider.module';
+import { LanguageModule } from './modules/languages/entities/language.module';
+import { ExperienceModule } from './modules/experience/experience.module';
 
 @Module({
   imports: [
@@ -35,7 +37,9 @@ import { ServiceProviderModule } from './modules/serviceProviders/service-provid
     ServiceCategoryModule,
     ServiceSubCategoryModule,
     VendorsModule,
-    ServiceProviderModule
+    ServiceProviderModule,
+    LanguageModule,
+    ExperienceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
