@@ -48,8 +48,8 @@ export class CreateVendorDto {
     @IsNumber()
     serviceCategoryId!: number;
 
-    @IsArray()
-    @ArrayNotEmpty()
+    // @IsArray()
+    // @ArrayNotEmpty()
     @Type(() => Number)
     @IsInt({ each: true })
     serviceSubCategoryIds!: number[];
