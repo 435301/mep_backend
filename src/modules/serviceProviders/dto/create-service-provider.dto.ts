@@ -42,9 +42,9 @@ export class CreateServiceProviderDto {
     @IsNotEmpty()
     email!: string;
 
-    @IsString()
-    @IsOptional()
-    icon?: string;
+    // @IsString()
+    // @IsOptional()
+    // icon?: string;
 
     @IsString()
     @IsOptional()
