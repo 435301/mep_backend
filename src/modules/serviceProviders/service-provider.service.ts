@@ -281,9 +281,9 @@ export class ServiceProviderService extends BaseService {
         MESSAGES.SERVICE_PROVIDER_NOT_FOUND,
       );
     }
-
+    const data = FileUrlHelper.mapArray([provider]);
     return {
-      data: provider,
+      data: data[0],
       message: MESSAGES.SERVICE_PROVIDER_FETCHED_SUCCESS,
     };
   }
