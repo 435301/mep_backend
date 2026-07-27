@@ -78,12 +78,14 @@ export class CreateVendorDto {
     location!: string;
 
     @IsString()
+    @IsOptional()
     @Matches(/^[1-9][0-9]{5}$/, {
         message: 'Invalid pincode.',
     })
     pincode!: string;
 
     @IsString()
+    @IsOptional()
     address!: string;
 
     @IsString()
@@ -91,6 +93,7 @@ export class CreateVendorDto {
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
+    @IsOptional()
     accountHolderName!: string;
 
     @IsString()
@@ -98,6 +101,7 @@ export class CreateVendorDto {
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
+    @IsOptional()
     bankName!: string;
 
     @IsString()
@@ -105,26 +109,31 @@ export class CreateVendorDto {
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
+    @IsOptional()
     branchName!: string;
 
     @IsString()
     @Matches(/^\d{9,18}$/, {
         message: 'Invalid account number.',
     })
+    @IsOptional()
     accountNumber!: string;
 
     @IsString()
     @Matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, {
         message: 'Invalid IFSC code.',
     })
+    @IsOptional()
     ifscCode!: string;
 
     @IsEnum(CommissionType)
+     @IsOptional()
     commissionType!: CommissionType;
 
     @Type(() => Number)
     @IsNumber()
     @Min(0)
+     @IsOptional()
     commissionValue!: number;
 
     @Transform(({ value }) => {
