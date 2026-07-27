@@ -75,6 +75,7 @@ export class CreateVendorDto {
     city!: string;
 
     @IsString()
+     @IsOptional()
     location!: string;
 
     @IsString()
