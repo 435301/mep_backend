@@ -21,10 +21,10 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      exceptionFactory: (errors) => {
-        console.log(JSON.stringify(errors, null, 2));
-        return new BadRequestException(errors);
-      },
+      // exceptionFactory: (errors) => {
+      //   console.log(JSON.stringify(errors, null, 2));
+      //   return new BadRequestException(errors);
+      // },
     }),
   );
 
