@@ -127,14 +127,16 @@ export class VendorsService extends BaseService {
         if (pan) {
             throw new BadRequestException(MESSAGES.PAN_EXISTS);
         }
-        const account = await this.vendorRepo.findOne({
-            where: {
-                accountNumber: dto.accountNumber,
-            },
-        });
+        if (dto.accountNumber) {
+            const account = await this.vendorRepo.findOne({
+                where: {
+                    accountNumber: dto.accountNumber,
+                },
+            });
 
-        if (account) {
-            throw new BadRequestException(MESSAGES.ACCOUNT_EXISTS);
+            if (account) {
+                throw new BadRequestException(MESSAGES.ACCOUNT_EXISTS);
+            }
         }
         if (!file) {
             throw new BadRequestException(MESSAGES.PROFILE_IMAGE_REQUIRED
