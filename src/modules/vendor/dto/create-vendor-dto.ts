@@ -75,7 +75,7 @@ export class CreateVendorDto {
     city!: string;
 
     @IsString()
-     @IsOptional()
+    @IsOptional()
     location!: string;
 
     @IsString()
@@ -90,59 +90,61 @@ export class CreateVendorDto {
     address!: string;
 
     @IsString()
+    @IsOptional()
     @TrimAndClean()
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
-    @IsOptional()
+
     accountHolderName!: string;
 
+    @IsOptional()
     @IsString()
     @TrimAndClean()
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
-    @IsOptional()
     bankName!: string;
 
     @IsString()
+    @IsOptional()
     @TrimAndClean()
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
-    @IsOptional()
     branchName!: string;
 
+
+    @IsOptional()
     @IsString()
     @Matches(/^\d{9,18}$/, {
         message: 'Invalid account number.',
     })
-    @IsOptional()
     accountNumber!: string;
 
+    @IsOptional()
     @IsString()
     @Matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, {
         message: 'Invalid IFSC code.',
     })
-    @IsOptional()
     ifscCode!: string;
 
     @IsEnum(CommissionType)
-     @IsOptional()
+    @IsOptional()
     commissionType!: CommissionType;
 
+    @IsOptional()
     @Type(() => Number)
     @IsNumber()
     @Min(0)
-     @IsOptional()
     commissionValue!: number;
 
+    @IsOptional()
     @Transform(({ value }) => {
         if (value === 'true') return true;
         if (value === 'false') return false;
         return value;
     })
-    @IsOptional()
     @IsBoolean()
     status?: boolean;
 }
