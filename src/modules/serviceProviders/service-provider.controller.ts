@@ -41,7 +41,8 @@ export class ServiceProviderController {
         @Body() dto: CreateServiceProviderDto,
         @Req() req: any,
     ) {
-        console.log(JSON.stringify(dto.mobile));
+        console.log(dto.services);
+        console.log(typeof dto.services);
         return this.serviceProviderService.create(dto, req.user.id, file);
     }
 
