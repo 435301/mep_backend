@@ -16,6 +16,7 @@ import {
     IsArray,
     IsInt,
     ValidateNested,
+    IsDate,
 } from 'class-validator';
 import { MESSAGES } from 'src/common/constants/status.constants';
 import { ContainsAlphabet } from 'src/common/decorators/contains-alphabet.decorator';
@@ -56,7 +57,9 @@ export class CreateServiceProviderDto {
     mobile!: string;
 
     @IsNotEmpty()
-    @IsDateString()
+    @Type(() => Date)
+    @IsDate()
+    // @IsDateString()
     dob?: Date;
 
     @IsOptional()
