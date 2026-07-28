@@ -22,6 +22,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
     
+      
     }),
   );
 
