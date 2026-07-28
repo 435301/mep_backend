@@ -22,6 +22,7 @@ export class CreateVendorDto {
     @IsString()
     @IsNotEmpty()
     @TrimAndClean()
+    @Transform(({ value }) => value === '' ? undefined : value)
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
@@ -89,15 +90,16 @@ export class CreateVendorDto {
     @IsOptional()
     address!: string;
 
+    @Transform(({ value }) => value === '' ? undefined : value)
     @IsString()
     @IsOptional()
     @TrimAndClean()
     @ContainsAlphabet({
         message: MESSAGES.TILE_CONTAIN_NUMBERS,
     })
-
     accountHolderName!: string;
 
+    @Transform(({ value }) => value === '' ? undefined : value)
     @IsOptional()
     @IsString()
     @TrimAndClean()
@@ -106,6 +108,7 @@ export class CreateVendorDto {
     })
     bankName!: string;
 
+    @Transform(({ value }) => value === '' ? undefined : value)
     @IsString()
     @IsOptional()
     @TrimAndClean()
@@ -114,7 +117,7 @@ export class CreateVendorDto {
     })
     branchName!: string;
 
-
+    @Transform(({ value }) => value === '' ? undefined : value)
     @IsOptional()
     @IsString()
     @Matches(/^\d{9,18}$/, {
@@ -122,6 +125,7 @@ export class CreateVendorDto {
     })
     accountNumber!: string;
 
+    @Transform(({ value }) => value === '' ? undefined : value)
     @IsOptional()
     @IsString()
     @Matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, {
