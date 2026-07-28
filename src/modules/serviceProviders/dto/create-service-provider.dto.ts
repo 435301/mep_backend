@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
     IsEnum,
     IsNotEmpty,
@@ -114,11 +114,15 @@ export class CreateServiceProviderDto {
     @IsString()
     address?: string;
 
-    @Transform(({ value }) =>
-        typeof value === 'string'
+    @Transform(({ value }) => {
+        if (!value) return [];
+
+        const parsed = typeof value === 'string'
             ? JSON.parse(value)
-            : value,
-    )
+            : value;
+
+        return plainToInstance(ServiceItemDto, parsed);
+    })
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => ServiceItemDto)
