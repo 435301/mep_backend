@@ -17,7 +17,6 @@ import {
     IsInt,
     ValidateNested,
     IsDate,
-    Min,
 } from 'class-validator';
 import { MESSAGES } from 'src/common/constants/status.constants';
 import { ContainsAlphabet } from 'src/common/decorators/contains-alphabet.decorator';
@@ -66,7 +65,6 @@ export class CreateServiceProviderDto {
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    @Min(18, { message: 'Age must be at least 18 years' })
     age?: number;
 
     @IsOptional()
