@@ -101,42 +101,58 @@ export class ServiceProviderService extends BaseService {
     if (!language) {
       throw new BadRequestException(MESSAGES.LANGUAGE_NOT_FOUND);
     }
+    const providerSubCategories: ServiceSubCategory[] = [];
 
-    // Validate Service Type
-    const serviceType = await this.serviceTypeRepo.findOne({
-      where: {
-        id: dto.serviceTypeId,
-        trash: false,
-      },
-    });
+    for (const service of dto.services) {
+      const serviceType = await this.serviceTypeRepo.findOne({
+        where: {
+          id: service.serviceTypeId,
+          trash: false,
+        },
+      });
 
-    if (!serviceType) {
-      throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+      if (!serviceType) {
+        throw new BadRequestException(
+          MESSAGES.SERVICE_TYPE_NOT_FOUND,
+        );
+      }
+
+      const category = await this.serviceCategoryRepo.findOne({
+        where: {
+          id: service.serviceCategoryId,
+          serviceTypeId: service.serviceTypeId,
+          trash: false,
+        },
+      });
+
+      if (!category) {
+        throw new BadRequestException(
+          `Category ${service.serviceCategoryId} does not belong to Service Type ${service.serviceTypeId}`,
+        );
+      }
+
+      const subCategories =
+        await this.subCategoryRepo.find({
+          where: {
+            id: In(service.serviceSubCategoryIds),
+            serviceCategoryId:
+              service.serviceCategoryId,
+            trash: false,
+          },
+        });
+
+      if (
+        subCategories.length !==
+        service.serviceSubCategoryIds.length
+      ) {
+        throw new BadRequestException(
+          'Invalid sub categories selected.',
+        );
+      }
+
+      providerSubCategories.push(...subCategories);
     }
 
-    // Validate Service Category belongs to Service Type
-    const category = await this.serviceCategoryRepo.findOne({
-      where: {
-        id: dto.serviceCategoryId,
-        serviceTypeId: dto.serviceTypeId,
-        trash: false,
-      },
-    });
-
-    if (!category) {
-      throw new BadRequestException(
-        'Selected Service Category does not belong to the selected Service Type.',
-      );
-    }
-
-    // Validate all selected Sub Categories belong to the selected Category
-    const subCategories = await this.subCategoryRepo.find({
-      where: {
-        id: In(dto.serviceSubCategoryIds),
-        serviceCategoryId: dto.serviceCategoryId,
-        trash: false,
-      },
-    });
 
     if (!file) {
       throw new BadRequestException(MESSAGES.PROFILE_IMAGE_REQUIRED
@@ -153,7 +169,7 @@ export class ServiceProviderService extends BaseService {
       district,
       experience,
       language,
-      serviceSubCategories: subCategories,
+      serviceSubCategories: providerSubCategories,
       createdBy: adminId,
     });
 
@@ -380,14 +396,51 @@ export class ServiceProviderService extends BaseService {
       provider.languageId = language.id;
     }
 
-    if (dto.serviceSubCategoryIds?.length) {
-      provider.serviceSubCategories =
-        await this.subCategoryRepo.find({
+    if (dto.services?.length) {
+      const providerSubCategories: ServiceSubCategory[] = [];
+
+      for (const service of dto.services) {
+        const serviceType = await this.serviceTypeRepo.findOne({
           where: {
-            id: In(dto.serviceSubCategoryIds),
+            id: service.serviceTypeId,
             trash: false,
           },
         });
+
+        if (!serviceType) {
+          throw new BadRequestException(MESSAGES.SERVICE_TYPE_NOT_FOUND);
+        }
+
+        const category = await this.serviceCategoryRepo.findOne({
+          where: {
+            id: service.serviceCategoryId,
+            serviceTypeId: service.serviceTypeId,
+            trash: false,
+          },
+        });
+
+        if (!category) {
+          throw new BadRequestException(
+            "Selected Service Category does not belong to the selected Service Type.",
+          );
+        }
+
+        const subCategories = await this.subCategoryRepo.find({
+          where: {
+            id: In(service.serviceSubCategoryIds),
+            serviceCategoryId: service.serviceCategoryId,
+            trash: false,
+          },
+        });
+
+        if (subCategories.length !== service.serviceSubCategoryIds.length) {
+          throw new BadRequestException("Invalid Sub Categories.");
+        }
+
+        providerSubCategories.push(...subCategories);
+      }
+
+      provider.serviceSubCategories = providerSubCategories;
     }
     if (file) {
       provider.icon = `serviceProviders/${file.filename}`;

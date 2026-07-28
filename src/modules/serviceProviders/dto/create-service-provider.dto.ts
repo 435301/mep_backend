@@ -15,10 +15,12 @@ import {
     Matches,
     IsArray,
     IsInt,
+    ValidateNested,
 } from 'class-validator';
 import { MESSAGES } from 'src/common/constants/status.constants';
 import { ContainsAlphabet } from 'src/common/decorators/contains-alphabet.decorator';
 import { TrimAndClean } from 'src/common/transforms/trim.transform';
+import { ServiceItemDto } from './service-item.dto';
 
 export enum RegisteredAs {
     VENDOR = 'VENDOR',
@@ -112,27 +114,15 @@ export class CreateServiceProviderDto {
     @IsString()
     address?: string;
 
-    @Transform(({ value }) => Number(value))
-    @Type(() => Number)
-    @IsNumber()
-    serviceTypeId!: number;
-
-    @Transform(({ value }) => Number(value))
-    @Type(() => Number)
-    @IsNumber()
-    serviceCategoryId!: number;
-
+    @Transform(({ value }) =>
+        typeof value === 'string'
+            ? JSON.parse(value)
+            : value,
+    )
     @IsArray()
-    @Transform(({ value }) => {
-        if (Array.isArray(value)) {
-            return value.map(Number);
-        }
-
-        return value ? [Number(value)] : [];
-    })
-    @Type(() => Number)
-    @IsInt({ each: true })
-    serviceSubCategoryIds !: number[];
+    @ValidateNested({ each: true })
+    @Type(() => ServiceItemDto)
+    services !: ServiceItemDto[];
 
     @Transform(({ value }) => {
         if (value === 'true') return true;
