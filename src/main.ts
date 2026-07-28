@@ -1,6 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
+  BadRequestException,
   ClassSerializerInterceptor,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,6 +21,10 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: (errors) => {
+        console.log(JSON.stringify(errors, null, 2));
+        return new BadRequestException(errors);
+      },
     }),
   );
 
